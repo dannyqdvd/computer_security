@@ -1,0 +1,12 @@
+hi
+Hal Lyle HObj
+write Lyle LObj 10
+foo Lyle LObj
+read Hal HObj
+write Lyle HObj 30
+read Hal LObj 
+read Lyle HObj
+write Lyle LObj 30
+write Hal Hobj 10
+write Hal LObj 10
+

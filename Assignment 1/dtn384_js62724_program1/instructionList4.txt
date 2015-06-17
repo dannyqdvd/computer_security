@@ -1,0 +1,11 @@
+write Lyle LObj 10
+read Lyle LObj
+read Lyle LObj 10
+hello
+read Hal HObj
+read Hal LObj
+read LObj Hal
+write Lyle HObj 100
+write Lyle HObj 346
+read Lyle LObj 208
+what
