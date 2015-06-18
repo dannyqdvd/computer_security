@@ -36,8 +36,8 @@ public class SecureSystem
 		sys.createSubject("Hal", high);
 
 		// We add two objects, one high and one low.
-		sys.getReferenceMonitor().createNewObject("LObj", low);
-		sys.getReferenceMonitor().createNewObject("HObj", high);
+		// sys.getReferenceMonitor().createNewObject("LObj", low);
+		// sys.getReferenceMonitor().createNewObject("HObj", high);
 
 		//Read from file and create instruction objects
 		File file = null;
@@ -55,10 +55,11 @@ class ReferenceMonitor
 {
 	List<Object> object_list = new ArrayList<Object>();
 
-	public void createNewObject(String name, SecurityLevel security_level)
+	public Object createNewObject(String name, SecurityLevel security_level)
 	{
 		Object o = new Object(name, security_level);
 		object_list.add(o);
+		return o;
 	}
 
 	public ReferenceMonitor(){}
@@ -117,23 +118,31 @@ class ReferenceMonitor
 			//	equal to the subject; init value is 0
 			else if (tokens[0].equals("CREATE") && tokens.length == 3){
 
-				for(int i = 0; i < this.object_list.size(); i++)
-				{
-					String temp = this.object_list.get(i).objectName;
-					
-					//compare to object in command-- if an object exists, no op
-					if(temp.equalsIgnoreCase(tokens[2])) 
+				if(!this.object_list.isEmpty()){
+					for(int i = 0; i < this.object_list.size(); i++)
 					{
-						break;
-					}
+						String temp = this.object_list.get(i).objectName;
+						
+						//compare to object in command-- if an object exists, no op
+						if(temp.equalsIgnoreCase(tokens[2])) 
+						{
+							break;
+						}
 
-					//no object exists, so create one and set seclevel to sub.sec level
-					//initial value is 0
-					else{
-						//send subject list so we can get subject and tokens so we get subname and objname 
-						ExecuteCreate(tokens, subject_list);
+						//no object exists, so create one and set seclevel to sub.sec level
+						//initial value is 0
+						else{
+							//send subject list so we can get subject and tokens so we get subname and objname 
+							ExecuteCreate(tokens, subject_list);
+						}
 					}
 				}
+
+				else{
+					ExecuteCreate(tokens, subject_list);
+
+				}
+
 			}
 
 			//DESTROY CASE
@@ -161,7 +170,7 @@ class ReferenceMonitor
 			{	
 				InstructionObject bo = new InstructionObject();
 				bo.createBadObject();
-				printState(bo, subject_list, "s", "o", 0);
+				//printState(bo, subject_list, "s", "o", 0);
 			}
 		}
 
@@ -208,8 +217,12 @@ class ReferenceMonitor
 			{	
 				//get subject level 
 				SecurityLevel sub_sec_levl = subject_list.get(i).subjectLevel;
-				createNewObject(tokens[2], sub_sec_levl);
-				break;
+				Object newObj = createNewObject(tokens[2], sub_sec_levl);
+
+				InstructionObject co = new InstructionObject();
+				co.createCreateObject(tokens[1], tokens[2]);
+				printState(co, subject_list, temp, newObj.objectName, 0 );
+				return;
 			}
 		}
 		
@@ -317,6 +330,14 @@ class ReferenceMonitor
 				System.out.println( subject.toLowerCase() + " writes value " + value + " to " + object.toLowerCase());
 				break;
 
+			case CREATE:
+				System.out.println( subject.toLowerCase() + " creates " + object.toLowerCase());
+				break;
+
+			case DESTROY:
+				System.out.println( subject.toLowerCase() + " destroys " + object.toLowerCase());
+				break;
+
 			default:
 				System.out.println("Bad Instruction");
 				break;
@@ -398,6 +419,20 @@ class InstructionObject
 		this.type = InstructionType.BAD;
 	}
 
+	public void createCreateObject(String sname, String oname)
+	{
+		this.type = InstructionType.CREATE;
+		this.subjectName = sname;
+		this.objectName = oname;
+	}
+
+	public void createDestroyObject(String sname, String oname)
+	{
+		this.type = InstructionType.DESTROY;
+		this.subjectName = sname;
+		this.objectName = oname;
+	}
+
 }
 
 enum SecurityLevel 
@@ -410,5 +445,8 @@ enum InstructionType
 {
 	READ,
 	WRITE,
-	BAD
+	BAD,	
+	CREATE,
+	DESTROY,
+	RUN
 }

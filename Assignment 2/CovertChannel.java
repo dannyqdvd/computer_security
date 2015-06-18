@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.*;
 import java.lang.*;
+import java.math.*;
 
 
 public class CovertChannel{
@@ -28,37 +29,51 @@ public class CovertChannel{
 		{
 			System.out.println(line);
 
-
 			System.out.println("Text: "+ line);
 
 			//get from text to binary
-			String binary = new BigInteger(text.getBytes()).toString(2);
-			System.out.println("As binary: "+binary);
+			String binary_line = new BigInteger(line.getBytes()).toString(2);
+			System.out.println("As binary: "+ binary_line);
+
+
+			//for the length of the string, hal will transmit it to lyle
+			for(int i = 0; i < binary_line.length(); i++){
+
+				char bit = binary_line.charAt(i);
+				System.out.println(bit);
+
+				//generate instructions to log file
+				//based on what is bit is seen in file
+
+				//	if bit == 0
+				//		run HAL
+				//		create HAL obj
+				//	else -- bit == 1
+				//		run HAL
+				//
+				//	CREATE LYLE OBJ
+				//	WRITE LYLE OBJ 1
+				//	DESTROY LYLE OBJ
+				//	RUN LYLE
+
+
+
+			}
+
+
+
 
 
 			//get to from binary back to text
-			String bitstream = new String(new BigInteger(binary, 2).toByteArray());
-			System.out.println("As text: "+text2);
+			String bitstream = new String(new BigInteger(binary_line, 2).toByteArray());
+			System.out.println("As text: "+ bitstream);
 
 
 
 
 		}
 
-		//generate instructions to log file
-		//based on what is bit is seen in file
-
-		//for loop
-		//	if bit == 0
-		//		run HAL
-		//		create HAL obj
-		//	else -- bit == 1
-		//		run HAL
-		//
-		//	CREATE LYLE OBJ
-		//	WRITE LYLE OBJ 1
-		//	DESTROY LYLE OBJ
-		//	RUN LYLE
+	
 
 	}
 }
