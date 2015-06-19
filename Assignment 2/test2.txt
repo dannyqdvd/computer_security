@@ -1,0 +1,23 @@
+These are the answers for CS361 quizzes given in the Summer Semester
+2015.  For some of these, other answers are possible. 
+
+----------------------------------------------------------------------
+
+Quiz 1:
+
+1.       Obj1    Obj2     Obj3
+  Subj1   R       R        R
+  Subj2  R/W      --       --
+  Subj3   R       --       --
+
+
+2. D (all are true)
+
+3. B (perfect security is likely not possible for complex systems)
+
+4. No.  It would allow anyone to raise their level arbitrarily and
+   read high level information for which they are not authorized.
+
+5. Yes, it would violate weak tranquility because a subject could
+   arbitrarily raise its level to High and read information for which
+   it's not authorized. (This is very similar to 4.)

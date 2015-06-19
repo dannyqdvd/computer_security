@@ -225,10 +225,6 @@ class ReferenceMonitor
 
 			//}
 			}
-
-			else {
-				wr.newLine();
-			}
 		
 		}
 

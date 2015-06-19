@@ -44,71 +44,67 @@ public class CovertChannel{
 		{
 			scanner.nextLine();
 			if (!(line = br.readLine()).equals("")){
-				//System.out.println(line);
+			//System.out.println(line);
 
-				//get from text to binary
-				String binary_line = new BigInteger(line.getBytes()).toString(2);
-				
-
-
+			//get from text to binary
+			String binary_line = new BigInteger(line.getBytes()).toString(2);
+			
 
 
-				//for the length of the string, hal will transmit it to lyle
-				for(int i = 0; i < binary_line.length(); i++){
 
-					char bit = binary_line.charAt(i);
-					//System.out.println(bit);
 
-					String runHal = "RUN HAL";
-					String createHal = "CREATE HAL OBJ";
-					String createLyle = "CREATE LYLE OBJ";
-					String writeLyle = "WRITE LYLE OBJ 1";
-					String destroyLyle = "DESTROY LYLE OBJ";
-					String runLyle = "RUN LYLE";
-					String readLyle = "READ LYLE OBJ";
+			//for the length of the string, hal will transmit it to lyle
+			for(int i = 0; i < binary_line.length(); i++){
 
-					if(bit == '0'){
-						writer.write(runHal);									writer.newLine();
-						writer.newLine();
+				char bit = binary_line.charAt(i);
+				//System.out.println(bit);
 
-						writer.write(createHal);
-						writer.newLine();
-					}	
-					else{
-						writer.write(runHal);
-						writer.newLine();					
-					}
+				String runHal = "RUN HAL";
+				String createHal = "CREATE HAL OBJ";
+				String createLyle = "CREATE LYLE OBJ";
+				String writeLyle = "WRITE LYLE OBJ 1";
+				String destroyLyle = "DESTROY LYLE OBJ";
+				String runLyle = "RUN LYLE";
+				String readLyle = "READ LYLE OBJ";
 
-				
-					writer.write(createLyle);
+				if(bit == '0'){
+					writer.write(runHal);									writer.newLine();
 					writer.newLine();
 
-					writer.write(writeLyle);
+					writer.write(createHal);
 					writer.newLine();
-
-					writer.write(readLyle);
-					writer.newLine();
-
-					writer.write(destroyLyle);
-					writer.newLine();	
-
-					writer.write(runLyle);
-					writer.newLine();
-
-
+				}	
+				else{
+					writer.write(runHal);
+					writer.newLine();					
 				}
 
-
-
-				
-
-
-
-			}
-
-			else {
+			
+				writer.write(createLyle);
 				writer.newLine();
+
+				writer.write(writeLyle);
+				writer.newLine();
+
+				writer.write(readLyle);
+				writer.newLine();
+
+				writer.write(destroyLyle);
+				writer.newLine();	
+
+				writer.write(runLyle);
+				writer.newLine();
+
+
 			}
+
+
+
+			
+
+
+
+		}
 
 		}
 		writer.close();
