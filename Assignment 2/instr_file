@@ -1,1 +1,12 @@
 Create Hal obj
+Run hal
+Write Hal obj 
+Read lyle obj
+run lyle
+Write lyle obj 1
+read lyle obj
+destroy lyle obj
+CREATE lyle obj
+write lyle obj 1
+read lyle obj
+run lyle

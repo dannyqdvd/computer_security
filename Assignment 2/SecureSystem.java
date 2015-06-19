@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.*;
 import java.lang.*;
+import java.math.*;
 
 
 public class SecureSystem
@@ -45,7 +46,11 @@ public class SecureSystem
 		   file = new File(args[0]);
 		}
 
-		sys.getReferenceMonitor().readfile(sys.subject_list, file);
+		File output = new File ("inputfilename.out");
+
+		sys.getReferenceMonitor().readfile(sys.subject_list, file, output);
+
+
 	}
 	 
 }
@@ -64,7 +69,7 @@ class ReferenceMonitor
 
 	public ReferenceMonitor(){}
 
-	public void readfile(List<Subject> subject_list, File file) throws IOException
+	public void readfile(List<Subject> subject_list, File file, File output) throws IOException
 	{
 		// Parse in text file
 		System.out.println();
@@ -74,6 +79,10 @@ class ReferenceMonitor
 		String line;
 		System.out.println("Reading from file: " + file);
 		System.out.println();
+
+		//file writer for Lyle to write the message out
+		//File output = new File ("inputfilename.out");
+		BufferedWriter wr = new BufferedWriter(new FileWriter(output));
 		
 
 		while((line = br.readLine()) != null)
@@ -110,6 +119,7 @@ class ReferenceMonitor
 					{
 						Object o = this.object_list.get(i);
 						ExecuteWrite(tokens, o, subject_list, Integer.parseInt(tokens[3]));
+						break;
 					}
 				}
 			}
@@ -118,7 +128,10 @@ class ReferenceMonitor
 			//	equal to the subject; init value is 0
 			else if (tokens[0].equals("CREATE") && tokens.length == 3){
 
+				boolean exists = false;
 				if(!this.object_list.isEmpty()){
+					
+
 					for(int i = 0; i < this.object_list.size(); i++)
 					{
 						String temp = this.object_list.get(i).objectName;
@@ -126,19 +139,18 @@ class ReferenceMonitor
 						//compare to object in command-- if an object exists, no op
 						if(temp.equalsIgnoreCase(tokens[2])) 
 						{
-							break;
-						}
-
-						//no object exists, so create one and set seclevel to sub.sec level
-						//initial value is 0
-						else{
-							//send subject list so we can get subject and tokens so we get subname and objname 
-							ExecuteCreate(tokens, subject_list);
+							exists = true;
 						}
 					}
+
+					if(exists == false){
+						ExecuteCreate(tokens, subject_list);
+					}
+			
 				}
 
-				else{
+
+				else {
 					ExecuteCreate(tokens, subject_list);
 
 				}
@@ -161,8 +173,35 @@ class ReferenceMonitor
 
 
 				}
+			}
 
-			}			
+			else if(tokens[0].equals("RUN") && tokens.length == 2){
+
+				if(tokens[1].equalsIgnoreCase("lyle")){
+
+					//check if read value of lyle and write to output file
+					for(int i = 0; i < subject_list.size(); i++)
+					{
+						String temp = subject_list.get(i).subjectName;
+						//get subject from name
+						if(temp.equalsIgnoreCase("lyle")){
+
+							int valueRead = subject_list.get(i).recent;
+							String bitstream = String.valueOf(valueRead);
+
+							
+							wr.write(bitstream);
+							
+
+						}
+					}
+
+
+				}
+
+			}
+
+						
 
 
 			//BAD CASE
@@ -176,6 +215,8 @@ class ReferenceMonitor
 
 		br.close();
 		fr.close();
+		wr.close();
+		
 	}
 
 	public void ExecuteDestroy(String[] tokens,  List<Subject> subject_list, Object o)
@@ -194,8 +235,15 @@ class ReferenceMonitor
 				SecurityLevel sub_sec_levl = subject_list.get(i).subjectLevel;
 
 				//if sub-hi, obj-hi or sub-lo, obj-lo then delete
-				if((sub_sec_levl == SecurityLevel.LOW && o.objectLevel == SecurityLevel.HIGH) || (sub_sec_levl == SecurityLevel.HIGH && o.objectLevel == SecurityLevel.HIGH) ){
+				if((sub_sec_levl == SecurityLevel.LOW && o.objectLevel == SecurityLevel.HIGH) || (sub_sec_levl == SecurityLevel.HIGH && o.objectLevel == SecurityLevel.HIGH) || (sub_sec_levl == SecurityLevel.LOW && o.objectLevel == SecurityLevel.LOW) ){
+					
+					//create destroy instr obj
+					InstructionObject co = new InstructionObject();
+					co.createDestroyObject(tokens[1], tokens[2]);
 					object_list.remove(o);
+
+					printState(co, subject_list, temp, o.objectName, 0 );
+
 					break;
 				}
 			}
@@ -263,7 +311,9 @@ class ReferenceMonitor
 					//printState output
 					printState(ro, subject_list, temp, o.objectName, 0);
 					return;
-				} 
+				}
+
+
 			}
 		}
 
@@ -286,8 +336,8 @@ class ReferenceMonitor
 			if(temp.equalsIgnoreCase(tokens[1]))
 			{
 				//check to see if subject level is greater than object level; 
-				//if yes, read and set value of recent
-				if(! (subject_list.get(i).subjectLevel == SecurityLevel.HIGH && o.objectLevel == SecurityLevel.LOW)  )
+				//slo; or shi ohi
+				if((subject_list.get(i).subjectLevel == SecurityLevel.LOW) || (subject_list.get(i).subjectLevel == SecurityLevel.HIGH && o.objectLevel == SecurityLevel.HIGH) )
 				{
 					//set recent to value of object
 					o.value = value;
@@ -299,18 +349,20 @@ class ReferenceMonitor
 					return;
 				}
 
-				//subject - low, object-high
-				else if (subject_list.get(i).subjectLevel == SecurityLevel.HIGH && o.objectLevel == SecurityLevel.LOW)
-				{
-					//creating instruction object
-					InstructionObject wo = new InstructionObject();
-					wo.createWriteObject(tokens[1], tokens[2], o.value);
-					//printState output
-					printState(wo, subject_list, temp, o.objectName, value);
-					return;
-				} 
+				//subject - high, object- lo
+				// else if (subject_list.get(i).subjectLevel == SecurityLevel.HIGH && o.objectLevel == SecurityLevel.HIGH)
+				// {
+				// 	//creating instruction object
+				// 	InstructionObject wo = new InstructionObject();
+				// 	wo.createWriteObject(tokens[1], tokens[2], o.value);
+				// 	//printState output
+				// 	printState(wo, subject_list, temp, o.objectName, value);
+				// 	return;
+				// } 
 			}
 		}
+
+
 
 		//if no name is found, bad instruction 
 		InstructionObject ro = new InstructionObject();

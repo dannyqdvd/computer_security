@@ -4,11 +4,10 @@ import java.lang.*;
 import java.math.*;
 
 
+
 public class CovertChannel{
 
-	public CovertChannel(){
-
-	}
+	public CovertChannel(){}
 
 	public static void main (String args[]) throws IOException {
 
@@ -37,6 +36,7 @@ public class CovertChannel{
 		{
 			System.out.println(line);
 
+			//debug; take out
 			System.out.println("Text: "+ line);
 
 			//get from text to binary
@@ -50,19 +50,6 @@ public class CovertChannel{
 				char bit = binary_line.charAt(i);
 				System.out.println(bit);
 
-				//generate instructions to log file
-				//based on what is bit is seen in file
-
-				//	if bit == 0
-				//		run HAL
-				//		create HAL obj
-				//	else -- bit == 1
-				//		run HAL
-				//
-				//	CREATE LYLE OBJ
-				//	WRITE LYLE OBJ 1
-				//	DESTROY LYLE OBJ
-				//	RUN LYLE
 				String runHal = "RUN HAL";
 				String createHal = "CREATE HAL OBJ";
 				String createLyle = "CREATE LYLE OBJ";
@@ -71,12 +58,10 @@ public class CovertChannel{
 				String runLyle = "RUN LYLE";
 				String readLyle = "READ LYLE OBJ";
 
-
-
-
-				if(bit == 0){
+				if(bit == '0'){
 					writer.write(runHal);									writer.newLine();
 					writer.newLine();
+
 					writer.write(createHal);
 					writer.newLine();
 				}	
@@ -88,20 +73,17 @@ public class CovertChannel{
 			
 				writer.write(createLyle);
 				writer.newLine();
+
 				writer.write(writeLyle);
 				writer.newLine();
+
 				writer.write(readLyle);
 				writer.newLine();
+
 				writer.write(destroyLyle);
-				writer.newLine();
+				writer.newLine();	
 				writer.write(runLyle);
 				writer.newLine();
-
-
-
-			
-
-
 
 
 			}
@@ -115,12 +97,12 @@ public class CovertChannel{
 			String bitstream = new String(new BigInteger(binary_line, 2).toByteArray());
 			System.out.println("As text: "+ bitstream);
 
-
-
-
 		}
 
-	
+		//call secureSystem
+		String [] ssargs = {"log.txt"}; 
+		SecureSystem.main(ssargs);
+
 
 	}
 }
