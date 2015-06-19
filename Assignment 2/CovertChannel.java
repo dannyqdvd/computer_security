@@ -36,12 +36,8 @@ public class CovertChannel{
 		{
 			System.out.println(line);
 
-			//debug; take out
-			System.out.println("Text: "+ line);
 
-			//get from text to binary
-			String binary_line = new BigInteger(line.getBytes()).toString(2);
-			System.out.println("As binary: "+ binary_line);
+
 
 
 			//for the length of the string, hal will transmit it to lyle
@@ -82,6 +78,7 @@ public class CovertChannel{
 
 				writer.write(destroyLyle);
 				writer.newLine();	
+
 				writer.write(runLyle);
 				writer.newLine();
 
@@ -93,9 +90,6 @@ public class CovertChannel{
 			writer.close();
 
 
-			//get to from binary back to text
-			String bitstream = new String(new BigInteger(binary_line, 2).toByteArray());
-			System.out.println("As text: "+ bitstream);
 
 		}
 

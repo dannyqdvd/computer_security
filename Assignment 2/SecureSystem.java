@@ -84,6 +84,7 @@ class ReferenceMonitor
 		//File output = new File ("inputfilename.out");
 		BufferedWriter wr = new BufferedWriter(new FileWriter(output));
 		
+		String bitstream = "";
 
 		while((line = br.readLine()) != null)
 		{
@@ -91,6 +92,7 @@ class ReferenceMonitor
 			String upCase = line.toUpperCase();
 			String delim = "[ ]+";
 			String[] tokens = upCase.split(delim);
+
 
 			//READ CASE
 			if(tokens[0].equals("READ") && tokens.length == 3)
@@ -187,11 +189,8 @@ class ReferenceMonitor
 						if(temp.equalsIgnoreCase("lyle")){
 
 							int valueRead = subject_list.get(i).recent;
-							String bitstream = String.valueOf(valueRead);
-
-							
-							wr.write(bitstream);
-							
+							//0010101101...
+							bitstream += String.valueOf(valueRead);
 
 						}
 					}
@@ -202,8 +201,6 @@ class ReferenceMonitor
 			}
 
 						
-
-
 			//BAD CASE
 			else
 			{	
@@ -215,6 +212,10 @@ class ReferenceMonitor
 
 		br.close();
 		fr.close();
+
+		String bitstream2 = new String(new BigInteger(bitstream, 2).toByteArray());
+		wr.write(bitstream2);
+
 		wr.close();
 		
 	}
