@@ -90,152 +90,153 @@ class ReferenceMonitor
 		String bitstream = "";
 
 
-		while(scanner.hasNextLine())
-		{	scanner.nextLine();
-
-			if ((line = br.readLine()) != null){
-			//work on here!!!!
-
-			// Create a copy of line and change all chars to uppercase
-			String upCase = line.toUpperCase();
-			String delim = "[ ]+";
-			String[] tokens = upCase.split(delim);
+		while(scanner.hasNext() != false)
+		{	line = scanner.nextLine();
 
 
-			//READ CASE
-			if(tokens[0].equals("READ") && tokens.length == 3)
-			{
-				//pass back object
-				for(int i = 0; i < this.object_list.size(); i++)
+				// Create a copy of line and change all chars to uppercase
+				String upCase = line.toUpperCase();
+				String delim = "[ ]+";
+				String[] tokens = upCase.split(delim);
+
+
+				//READ CASE
+				if(tokens[0].equals("READ") && tokens.length == 3)
 				{
-					String temp = this.object_list.get(i).objectName;
-					//compare to object in command
-					if(temp.equalsIgnoreCase(tokens[2])) 
+					//pass back object
+					for(int i = 0; i < this.object_list.size(); i++)
 					{
-						Object o = this.object_list.get(i);
-						ExecuteRead(tokens, o, subject_list);
+						String temp = this.object_list.get(i).objectName;
+						//compare to object in command
+						if(temp.equalsIgnoreCase(tokens[2])) 
+						{
+							Object o = this.object_list.get(i);
+							ExecuteRead(tokens, o, subject_list);
+						}
 					}
 				}
-			}
-			//WRITE CASE
-			else if(tokens[0].equals("WRITE") && tokens.length == 4 )
-			{
-				for(int i = 0; i < this.object_list.size(); i++)
+				//WRITE CASE
+				else if(tokens[0].equals("WRITE") && tokens.length == 4 )
 				{
-					String temp = this.object_list.get(i).objectName;
-					
-					//compare to object in command
-					if(temp.equalsIgnoreCase(tokens[2])) 
+					for(int i = 0; i < this.object_list.size(); i++)
 					{
-						Object o = this.object_list.get(i);
-						ExecuteWrite(tokens, o, subject_list, Integer.parseInt(tokens[3]));
-						break;
+						String temp = this.object_list.get(i).objectName;
+						
+						//compare to object in command
+						if(temp.equalsIgnoreCase(tokens[2])) 
+						{
+							Object o = this.object_list.get(i);
+							ExecuteWrite(tokens, o, subject_list, Integer.parseInt(tokens[3]));
+							break;
+						}
 					}
 				}
-			}
 
-			//CREATE CASE - no op if object exists on any level, sec level is 
-			//	equal to the subject; init value is 0
-			else if (tokens[0].equals("CREATE") && tokens.length == 3){
+				//CREATE CASE - no op if object exists on any level, sec level is 
+				//	equal to the subject; init value is 0
+				else if (tokens[0].equals("CREATE") && tokens.length == 3){
 
-				boolean exists = false;
-				if(!this.object_list.isEmpty()){
-					
+					boolean exists = false;
+					if(!this.object_list.isEmpty()){
+						
+
+						for(int i = 0; i < this.object_list.size(); i++)
+						{
+							String temp = this.object_list.get(i).objectName;
+							
+							//compare to object in command-- if an object exists, no op
+							if(temp.equalsIgnoreCase(tokens[2])) 
+							{
+								exists = true;
+							}
+						}
+
+						if(exists == false){
+							ExecuteCreate(tokens, subject_list);
+						}
+				
+					}
+
+
+					else {
+						ExecuteCreate(tokens, subject_list);
+
+					}
+
+				}
+
+
+				//DESTROY CASE
+				else if (tokens[0].equals("DESTROY") && tokens.length == 3){
 
 					for(int i = 0; i < this.object_list.size(); i++)
 					{
 						String temp = this.object_list.get(i).objectName;
 						
-						//compare to object in command-- if an object exists, no op
+						//compare to object in command-- if an object exists, check write access of sub
 						if(temp.equalsIgnoreCase(tokens[2])) 
 						{
-							exists = true;
+							Object o = this.object_list.get(i);
+							ExecuteDestroy(tokens, subject_list, o);
 						}
-					}
 
-					if(exists == false){
-						ExecuteCreate(tokens, subject_list);
+
 					}
-			
 				}
 
+				//write to file
+				else if(tokens[0].equals("RUN") && tokens.length == 2){
 
-				else {
-					ExecuteCreate(tokens, subject_list);
+					if(tokens[1].equalsIgnoreCase("lyle")){
 
-				}
+						//check if read value of lyle and write to output file
+						for(int i = 0; i < subject_list.size(); i++)
+						{
+							String temp = subject_list.get(i).subjectName;
+							//get subject from name
+							if(temp.equalsIgnoreCase("lyle")){
 
-			}
+								int valueRead = subject_list.get(i).recent;
+								//0010101101...
+								bitstream = bitstream + String.valueOf(valueRead);
 
-			//DESTROY CASE
-			else if (tokens[0].equals("DESTROY") && tokens.length == 3){
-
-				for(int i = 0; i < this.object_list.size(); i++)
-				{
-					String temp = this.object_list.get(i).objectName;
-					
-					//compare to object in command-- if an object exists, check write access of sub
-					if(temp.equalsIgnoreCase(tokens[2])) 
-					{
-						Object o = this.object_list.get(i);
-						ExecuteDestroy(tokens, subject_list, o);
-					}
-
-
-				}
-			}
-
-			else if(tokens[0].equals("RUN") && tokens.length == 2){
-
-				if(tokens[1].equalsIgnoreCase("lyle")){
-
-					//check if read value of lyle and write to output file
-					for(int i = 0; i < subject_list.size(); i++)
-					{
-						String temp = subject_list.get(i).subjectName;
-						//get subject from name
-						if(temp.equalsIgnoreCase("lyle")){
-
-							int valueRead = subject_list.get(i).recent;
-							//0010101101...
-							bitstream += String.valueOf(valueRead);
-
+							}
 						}
-					}
 
+
+					}
 
 				}
 
-			}
+							
+				//BAD CASE
+				else
+				{	
+					InstructionObject bo = new InstructionObject();
+					bo.createBadObject();
+					//printState(bo, subject_list, "s", "o", 0);
+				}
 
-						
-			//BAD CASE
-			else
-			{	
-				InstructionObject bo = new InstructionObject();
-				bo.createBadObject();
-				//printState(bo, subject_list, "s", "o", 0);
-			}
+				// while (bitstream.length() < 4){
 
-			// while (bitstream.length() < 4){
+				// 	String bitstream2 = new String(new BigInteger(bitstream, 2).toByteArray());
+				// 	wr.write(bitstream2);
+				// 	bitstream = "";
 
-			// 	String bitstream2 = new String(new BigInteger(bitstream, 2).toByteArray());
-			// 	wr.write(bitstream2);
-			// 	bitstream = "";
-
+				//}
 			//}
-			}
 
-			else {
-				wr.newLine();
-			}
+
 		
 		}
 
 		br.close();
 		fr.close();
 
+		
+
 		//if(!bitstream.equals(null)){
+
 		String bitstream2 = new String(new BigInteger(bitstream, 2).toByteArray());
 		wr.write(bitstream2);
 		//}

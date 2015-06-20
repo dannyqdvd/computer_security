@@ -42,22 +42,34 @@ public class CovertChannel{
 
 		while(scanner.hasNextLine())
 		{
-			scanner.nextLine();
-			if (!(line = br.readLine()).equals("")){
-				//System.out.println(line);
+			String ns = scanner.nextLine();
+			System.out.println(ns);
+			String binary_line = "\n";
 
-				//get from text to binary
-				String binary_line = new BigInteger(line.getBytes()).toString(2);
+			// if(ns.equals("")){
+			// 	System.out.println("NEWLINE!!");
+			// 	binary_line = ("");
+			// }
+
+			//else if ( !((line = br.readLine()).equals("") )){
 				
 
+				//get from text to binary
 
 
+
+				if(!ns.equals("")){
+				 	binary_line = new BigInteger((ns+'\r'+'\n' + '\r').getBytes()).toString(2) ;
+				}
+
+
+				
+				
 
 				//for the length of the string, hal will transmit it to lyle
 				for(int i = 0; i < binary_line.length(); i++){
 
 					char bit = binary_line.charAt(i);
-					//System.out.println(bit);
 
 					String runHal = "RUN HAL";
 					String createHal = "CREATE HAL OBJ";
@@ -68,16 +80,18 @@ public class CovertChannel{
 					String readLyle = "READ LYLE OBJ";
 
 					if(bit == '0'){
-						writer.write(runHal);									writer.newLine();
+						writer.write(runHal);						
 						writer.newLine();
 
 						writer.write(createHal);
 						writer.newLine();
-					}	
-					else{
+					}
+
+					else if (bit == '1'){
 						writer.write(runHal);
 						writer.newLine();					
 					}
+
 
 				
 					writer.write(createLyle);
@@ -93,24 +107,22 @@ public class CovertChannel{
 					writer.newLine();	
 
 					writer.write(runLyle);
-					writer.newLine();
+					writer.newLine();	
 
 
-				}
+				} //end for loop
 
-
-
-				
-
-
-
-			}
-
-			else {
-				writer.newLine();
-			}
 
 		}
+
+
+			//}//end if
+
+
+
+
+
+
 		writer.close();
 
 
