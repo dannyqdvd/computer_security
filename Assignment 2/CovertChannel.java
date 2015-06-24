@@ -43,24 +43,30 @@ public class CovertChannel{
 		while(scanner.hasNextLine())
 		{
 			String ns = scanner.nextLine();
-			System.out.println(ns);
-			String binary_line = "\n";
+			//System.out.println(ns);
+			String binary_line = String.valueOf('\n');
 
-			// if(ns.equals("")){
-			// 	System.out.println("NEWLINE!!");
-			// 	binary_line = ("");
-			// }
-
-			//else if ( !((line = br.readLine()).equals("") )){
-				
-
-				//get from text to binary
+			if(ns.equals("")){
+			 	System.out.print("NEWLINE!!");
+			 	//binary_line = ns + "\n";
+			 	//int ascii = (char) 10;
+			 	//binary_line = Character.toString ((char) 10);
+			 	binary_line = Character.toString('\n');
+			 	//System.out.print(binary_line);
 
 
 
-				if(!ns.equals("")){
-				 	binary_line = new BigInteger((ns+'\r'+'\n' + '\r').getBytes()).toString(2) ;
+			}
+
+
+			else{
+					//01010101
+					
+				 	binary_line = new BigInteger((ns + String.valueOf('\n')).getBytes()).toString(2) ;
+					//System.out.print("LINE" + ns);
+
 				}
+			
 
 
 				
