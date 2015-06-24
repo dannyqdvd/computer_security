@@ -93,7 +93,7 @@ public class HuffmanCode {
         HuffmanTree tree = buildTree(freq);
  
         // print out results
-        System.out.println("SYMBOL\tWEIGHT\tHUFFMAN CODE");
+        System.out.println("LETTER\tFREQ\tHUFFMAN CODE");
         printCodes(tree, new StringBuffer());
     }
 }

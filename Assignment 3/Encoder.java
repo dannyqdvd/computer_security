@@ -7,7 +7,8 @@ import java.math.*;
 public class Encoder{
 
 	public static int [] letterFreq = new int[27]; 
-	public static int sum=0;
+	public static int sum = 0;
+	public static double entropy = 0.0;
 
 	public Encoder(){}
 
@@ -22,8 +23,16 @@ public class Encoder{
 		   freqFile = new File(args[0]);
 		}
 
+		//puts frequencies into array and calculates sum
 		readFreqFile(freqFile);
+
+		//generate huffman code
 		HuffmanCode.start(letterFreq);
+
+		//calcuate entropy
+		calcEntropy();
+
+
 
 
 
@@ -50,9 +59,37 @@ public class Encoder{
 			sum += f;
 			index++;
 
-			//System.out.printf("Sum: %d index: %d" , sum, index);
 		}
 
 	}
+
+	public static void calcEntropy(){
+
+		// h = - (sigma P * log2 P)
+		for(int i = 0; i < letterFreq.length; i++){
+			
+			if(letterFreq[i] != 0){
+
+				double prob = (double)letterFreq[i] / sum;
+
+				entropy -= prob * log2(prob);
+
+			}
+		}
+
+		System.out.printf("Entropy of this language is: %.2f\n", entropy );
+
+
+	}
+
+	private static double log2(double a) {
+	  return Math.log(a) / Math.log(2);
+	}
+
+
+
+
+
+
 
 }
