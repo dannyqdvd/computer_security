@@ -12,6 +12,11 @@ public class Encoder{
 	//array of huffman code for each letter
 	public static int [] encoded = new int[27];
 
+	public static double volume = 10.0 ;
+	public static double bps = 0.0;
+	public static String totalBitsUsed = "";
+
+
 
 
 	public static void main (String args[]) throws IOException {
@@ -38,12 +43,10 @@ public class Encoder{
 
 		//encode file
 		encodeFile();
+		System.out.printf("Average bits per symbol is: %.2f\n" ,bps);
 
 		//decode file
 		decodeFile();
-
-
-
 
 
 	}
@@ -78,7 +81,7 @@ public class Encoder{
 			
 			if(letterFreq[i] != 0){
 
-				double prob = (double)letterFreq[i] / sum;
+				double prob = (double)letterFreq[i] / (double) sum;
 
 				entropy -= prob * log2(prob);
 
@@ -99,7 +102,6 @@ public class Encoder{
 		File testText = new File ("testText");
 		BufferedWriter writer = new BufferedWriter(new FileWriter(testText));
 
-		int volume = 10 ;
 
 		Random randomGenerator = new Random();
 
@@ -130,12 +132,6 @@ public class Encoder{
 		writer.close();
 		
 
-
-		
-
-
-
-
 	}
 
 	//write to file named testText.enc1
@@ -156,7 +152,13 @@ public class Encoder{
 
 			writer.write(encoding);
 			writer.newLine();
+
+			totalBitsUsed += encoding;
 		}
+
+		bps = (double)totalBitsUsed.length() / volume;
+
+
 
 		writer.close();
 
