@@ -9,13 +9,14 @@ public class Encoder{
 	public static int [] letterFreq = new int[27]; 
 	public static int sum = 0;
 	public static double entropy = 0.0;
+	//array of huffman code for each letter
+	public static int [] encoded = new int[27];
 
-	public Encoder(){}
 
 
 	public static void main (String args[]) throws IOException {
 
-		Encoder e = new Encoder();
+		Arrays.fill(encoded, -1);
 		//frequencies file
 
 		File freqFile = null;
@@ -32,8 +33,14 @@ public class Encoder{
 		//calcuate entropy
 		calcEntropy();
 
+		//create random volume of text
+		createRandomText();
 
+		//encode file
+		encodeFile();
 
+		//decode file
+		decodeFile();
 
 
 
@@ -46,7 +53,6 @@ public class Encoder{
 
 		FileReader fr = new FileReader(freqFile);
 		BufferedReader br = new BufferedReader(fr);
-		String line;
 		System.out.println("Reading from Frequencies file: " + freqFile);
 
 		Scanner scanner = new Scanner (freqFile);
@@ -60,6 +66,8 @@ public class Encoder{
 			index++;
 
 		}
+
+		fr.close();
 
 	}
 
@@ -79,11 +87,107 @@ public class Encoder{
 
 		System.out.printf("Entropy of this language is: %.2f\n", entropy );
 
-
 	}
 
 	private static double log2(double a) {
 	  return Math.log(a) / Math.log(2);
+	}
+
+	public static void createRandomText() throws IOException{
+
+		//generated test file for ss
+		File testText = new File ("testText");
+		BufferedWriter writer = new BufferedWriter(new FileWriter(testText));
+
+		int volume = 10 ;
+
+		Random randomGenerator = new Random();
+
+		char [] letters = new char[sum];
+		int count = 0;
+		for(int i = 0; i < letterFreq.length; i++){
+			for(int j = 0; j < letterFreq[i]; j++){
+
+				int symbol = i + 65;
+				letters[count] = (char) symbol;
+				count ++;
+			}
+
+		}
+
+		// for(int i = 0; i < letters.length; i++){
+		// 	System.out.println(letters[i]);
+
+		// }		
+
+		int randomNum;
+		for(int i = 0; i < volume; i++){
+			randomNum = randomGenerator.nextInt(sum);
+			writer.write(letters[randomNum]);
+
+		}
+
+		writer.close();
+		
+
+
+		
+
+
+
+
+	}
+
+	//write to file named testText.enc1
+	public static void encodeFile() throws IOException{
+
+		File enc1 = new File ("testText.enc1");
+		BufferedWriter writer = new BufferedWriter(new FileWriter(enc1));
+
+		FileReader fr = new FileReader("testText");
+		BufferedReader br = new BufferedReader(fr);
+
+		int r;
+		while( (r=br.read()) != -1 ){
+			char letter = (char) r;
+
+			//get encoding of letter from map
+			String encoding = HuffmanCode.encodingMap.get(letter);
+
+			writer.write(encoding);
+			writer.newLine();
+		}
+
+		writer.close();
+
+
+
+	}
+
+	//write to file named testText.dec1
+	public static void decodeFile() throws IOException{
+
+		File dec1 = new File ("testText.dec1");
+		BufferedWriter writer = new BufferedWriter(new FileWriter(dec1));
+
+		FileReader fr = new FileReader("testText.enc1");
+		BufferedReader br = new BufferedReader(fr);
+
+		String encoding = br.readLine();
+
+		while( encoding != null ){
+
+
+			//get encoding of letter from map
+			char letter = HuffmanCode.decodingMap.get(encoding);
+
+			writer.write(letter);
+
+			encoding = br.readLine();
+		}
+
+		writer.close();
+
 	}
 
 

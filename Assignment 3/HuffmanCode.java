@@ -17,8 +17,10 @@ class HuffmanLeaf extends HuffmanTree {
  
     public HuffmanLeaf(int freq, char val) {
         super(freq);
+
         int shifted = (int) val + 65;
         value = (char) shifted;
+
     }
 }
  
@@ -33,6 +35,9 @@ class HuffmanNode extends HuffmanTree {
 }
  
 public class HuffmanCode {
+
+    public static Map<Character, String > encodingMap = new HashMap<Character, String>();
+    public static Map<String, Character> decodingMap = new HashMap<String, Character>();
     // input is an array of frequencies, indexed by character code
     public static HuffmanTree buildTree(int[] charFreqs) {
         PriorityQueue<HuffmanTree> trees = new PriorityQueue<HuffmanTree>();
@@ -62,6 +67,10 @@ public class HuffmanCode {
  
             // print out character, frequency, and code for this leaf (which is just the prefix)
             System.out.println(leaf.value + "\t" + leaf.frequency + "\t" + prefix);
+            HuffmanCode.encodingMap.put(leaf.value, prefix.toString());
+            HuffmanCode.decodingMap.put(prefix.toString(), leaf.value);
+
+
  
         } else if (tree instanceof HuffmanNode) {
             HuffmanNode node = (HuffmanNode)tree;
