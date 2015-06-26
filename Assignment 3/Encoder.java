@@ -44,6 +44,8 @@ public class Encoder{
 		//encode file
 		encodeFile();
 		System.out.printf("Average bits per symbol is: %.2f\n" ,bps);
+		double percentDiff = (bps - entropy) * 100;
+		System.out.printf("Percent diiference: %.2f%s\n" , percentDiff, "%");
 
 		//decode file
 		decodeFile();
