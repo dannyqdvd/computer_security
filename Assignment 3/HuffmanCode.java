@@ -23,6 +23,26 @@ class HuffmanLeaf extends HuffmanTree {
 
     }
 }
+
+class PairHuffmanLeaf extends HuffmanTree {
+    public final String value; // the character this leaf represents
+ 
+    public PairHuffmanLeaf(int freq, char val) {
+        super(freq);
+
+        int firstchar = (int) val + 65;
+        int secondchar = firstchar + 65;
+        StringBuilder s = new StringBuilder();
+        s.append((char) firstchar).append((char) secondchar);
+        //value = (char) firstchar + (char) secondchar;
+        value = s.toString();
+    }
+}
+
+
+
+
+
  
 class HuffmanNode extends HuffmanTree {
     public final HuffmanTree left, right; // subtrees
@@ -86,9 +106,9 @@ public class HuffmanCode {
             prefix.deleteCharAt(prefix.length()-1);
         }
     }
+
  
     public static void start(int [] freq) {
-        String test = "this is an example for huffman encoding";
  
         // we will assume that all our characters will have
         // code less than 256, for simplicity
@@ -101,6 +121,25 @@ public class HuffmanCode {
         
         HuffmanTree tree = buildTree(freq);
  
+        // print out results
+        System.out.println("LETTER\tFREQ\tHUFFMAN CODE");
+        printCodes(tree, new StringBuffer());
+    }
+
+
+    public static void pairStart(int [] freq) {
+    
+        // we will assume that all our characters will have
+        // code less than 256, for simplicity
+        //int[] charFreqs = args[0];
+        // read each character and record the frequencies
+        // for (char c : test.toCharArray())
+        //     charFreqs[c]++;
+    
+        // build tree
+        
+        HuffmanTree tree = buildTree(freq);
+    
         // print out results
         System.out.println("LETTER\tFREQ\tHUFFMAN CODE");
         printCodes(tree, new StringBuffer());

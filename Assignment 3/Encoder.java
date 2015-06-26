@@ -16,6 +16,11 @@ public class Encoder{
 	public static double bps = 0.0;
 	public static String totalBitsUsed = "";
 
+	//pair arrays - 27^2 elements
+	public static int [] pairFreq = new int[729];
+	public static int [] pairEncoded = new int[729];
+	public static int pairSum = 0;
+
 
 
 
@@ -49,6 +54,9 @@ public class Encoder{
 
 		//decode file
 		decodeFile();
+
+		//caculate pair arrays
+		calcPairs();
 
 
 	}
@@ -118,11 +126,7 @@ public class Encoder{
 			}
 
 		}
-
-		// for(int i = 0; i < letters.length; i++){
-		// 	System.out.println(letters[i]);
-
-		// }		
+		
 
 		int randomNum;
 		for(int i = 0; i < volume; i++){
@@ -160,8 +164,6 @@ public class Encoder{
 
 		bps = (double)totalBitsUsed.length() / volume;
 
-
-
 		writer.close();
 
 
@@ -191,6 +193,29 @@ public class Encoder{
 		}
 
 		writer.close();
+
+	}
+
+	public static void calcPairs(){
+
+		pairSum = sum * sum;
+		System.out.printf("Pair sum: %d\n ", pairSum);
+
+
+		int pairIndex = 0;
+		for(int i = 0; i < letterFreq.length; i++){
+			for(int j = 0; j < letterFreq.length; j++){
+				//fill in pair array
+				pairFreq[pairIndex] = letterFreq[i] * letterFreq[j];
+				pairIndex++;
+			}
+		}
+
+		//debug: print out new pairfreq array
+		for(int i = 0; i < pairFreq.length; i++){
+			System.out.printf("%d ", pairFreq[i]);
+		}
+		System.out.println();
 
 	}
 
