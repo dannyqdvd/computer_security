@@ -55,8 +55,11 @@ public class Encoder{
 		//decode file
 		decodeFile();
 
+
+		//Pair Symbols start//
 		//caculate pair arrays
 		calcPairs();
+		PairHuffmanCode.start(pairFreq);
 
 
 	}

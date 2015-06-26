@@ -54,10 +54,10 @@ class HuffmanNode extends HuffmanTree {
     }
 }
  
-public class HuffmanCode {
+public class PairHuffmanCode {
 
-    public static Map<Character, String > encodingMap = new HashMap<Character, String>();
-    public static Map<String, Character> decodingMap = new HashMap<String, Character>();
+    public static Map<String, String > encodingMap = new HashMap<String, String>();
+    public static Map<String, String> decodingMap = new HashMap<String, String>();
     // input is an array of frequencies, indexed by character code
     public static HuffmanTree buildTree(int[] charFreqs) {
         PriorityQueue<HuffmanTree> trees = new PriorityQueue<HuffmanTree>();
@@ -125,6 +125,7 @@ public class HuffmanCode {
         System.out.println("LETTER\tFREQ\tHUFFMAN CODE");
         printCodes(tree, new StringBuffer());
     }
+
 
 
 }
