@@ -6,20 +6,29 @@ import java.math.*;
 
 public class Encoder{
 
-	public static int [] letterFreq = new int[27]; 
+	public static int [] letterFreq = new int[26]; 
 	public static int sum = 0;
 	public static double entropy = 0.0;
-	//array of huffman code for each letter
-	public static int [] encoded = new int[27];
 
-	public static double volume = 10.0 ;
+	//array of huffman code for each letter
+	public static int [] encoded = new int[26];
+	public static double volume = 100.0 ;
 	public static double bps = 0.0;
 	public static String totalBitsUsed = "";
 
+
+
 	//pair arrays - 27^2 elements
-	public static int [] pairFreq = new int[729];
-	public static int [] pairEncoded = new int[729];
+	public static int [] pairFreq = new int[676];
 	public static int pairSum = 0;
+	public static double pairEntropy = 0.0;
+
+
+	public static int [] pairEncoded = new int[676];
+	public static double pbps = 0.0;
+	public static String ptotalBitsUsed = "";
+
+
 
 
 
@@ -27,6 +36,7 @@ public class Encoder{
 	public static void main (String args[]) throws IOException {
 
 		Arrays.fill(encoded, -1);
+		Arrays.fill(pairEncoded, -1);
 		//frequencies file
 
 		File freqFile = null;
@@ -36,30 +46,45 @@ public class Encoder{
 
 		//puts frequencies into array and calculates sum
 		readFreqFile(freqFile);
-
 		//generate huffman code
 		HuffmanCode.start(letterFreq);
-
 		//calcuate entropy
-		calcEntropy();
-
+		entropy = calcEntropy(letterFreq, sum);
 		//create random volume of text
 		createRandomText();
-
 		//encode file
 		encodeFile();
+		System.out.printf("Entropy of this language is: %.2f\n", entropy );
 		System.out.printf("Average bits per symbol is: %.2f\n" ,bps);
 		double percentDiff = (bps - entropy) * 100;
-		System.out.printf("Percent diiference: %.2f%s\n" , percentDiff, "%");
-
+		System.out.printf("Percent diference: %.2f%s\n" , percentDiff, "%");
 		//decode file
 		decodeFile();
 
 
-		//Pair Symbols start//
+
+		//***************************Pair Symbols start*************************//
+
 		//caculate pair arrays
+		System.out.println();
 		calcPairs();
 		PairHuffmanCode.start(pairFreq);
+
+
+		//calculate pair ;pbps must read then caculate
+		pairEntropy = calcEntropy(pairFreq, pairSum) ;
+
+		//encoding pair
+		p_encodeFile();
+		System.out.printf("Entropy of this language is: %.2f\n", pairEntropy);
+		System.out.printf("Average bits per symbol is: %.2f\n" ,pbps);
+		double ppercentDiff = (pbps - pairEntropy) * 100;
+		System.out.printf("Percent diference: %.2f%s\n" , ppercentDiff, "%");
+		//decode pair
+		p_decodeFile();
+
+
+
 
 
 	}
@@ -85,23 +110,28 @@ public class Encoder{
 
 		fr.close();
 
+
 	}
 
-	public static void calcEntropy(){
+
+
+
+	public static double calcEntropy(int [] freq1, double sum1){
 
 		// h = - (sigma P * log2 P)
-		for(int i = 0; i < letterFreq.length; i++){
+		double h = 0;
+		for(int i = 0; i < freq1.length; i++){
 			
-			if(letterFreq[i] != 0){
+			if(freq1[i] != 0){
 
-				double prob = (double)letterFreq[i] / (double) sum;
+				double prob = (double)freq1[i] / (double) sum1;
 
-				entropy -= prob * log2(prob);
+				h -= prob * log2(prob);
 
 			}
 		}
 
-		System.out.printf("Entropy of this language is: %.2f\n", entropy );
+		return h;
 
 	}
 
@@ -130,7 +160,6 @@ public class Encoder{
 
 		}
 		
-
 		int randomNum;
 		for(int i = 0; i < volume; i++){
 			randomNum = randomGenerator.nextInt(sum);
@@ -171,7 +200,48 @@ public class Encoder{
 
 
 
+
+
+
 	}
+
+	//pair - write to file named testText.enc2
+	public static void p_encodeFile() throws IOException{
+
+		File enc2 = new File ("testText.enc2");
+		BufferedWriter writer = new BufferedWriter(new FileWriter(enc2));
+
+		FileReader fr = new FileReader("testText");
+		BufferedReader br = new BufferedReader(fr);
+
+		int f;
+		int s;
+		while( (f=br.read()) != -1 && (s=br.read())!= -1 ){
+
+			char fletter = (char) f;
+			char sletter = (char) s;
+
+			//put letters together
+			StringBuilder str = new StringBuilder();
+			str.append((char) fletter);
+			str.append((char) sletter);
+
+			//get encoding of letter from map
+			String encoding = PairHuffmanCode.encodingMap.get(str.toString());
+
+			writer.write(encoding);
+			writer.newLine();
+
+			ptotalBitsUsed += encoding;
+		}
+
+		pbps = (double)ptotalBitsUsed.length() / volume;
+
+		writer.close();
+
+
+	}
+
 
 	//write to file named testText.dec1
 	public static void decodeFile() throws IOException{
@@ -199,10 +269,37 @@ public class Encoder{
 
 	}
 
+	//write to file named testText.dec1
+	public static void p_decodeFile() throws IOException{
+
+		File dec2 = new File ("testText.dec2");
+		BufferedWriter writer = new BufferedWriter(new FileWriter(dec2));
+
+		FileReader fr = new FileReader("testText.enc2");
+		BufferedReader br = new BufferedReader(fr);
+
+		String encoding = br.readLine();
+
+		while( encoding != null ){
+
+
+			//get encoding of letter from map
+			String pair = PairHuffmanCode.decodingMap.get(encoding);
+
+			writer.write(pair);
+
+			encoding = br.readLine();
+		}
+
+		writer.close();
+
+	}
+
 	public static void calcPairs(){
 
-		pairSum = sum * sum;
-		System.out.printf("Pair sum: %d\n ", pairSum);
+		pairSum = sum*sum;
+
+		System.out.printf("Pair sum: %d\n", pairSum);
 
 
 		int pairIndex = 0;
@@ -215,10 +312,10 @@ public class Encoder{
 		}
 
 		//debug: print out new pairfreq array
-		for(int i = 0; i < pairFreq.length; i++){
-			System.out.printf("%d ", pairFreq[i]);
-		}
-		System.out.println();
+		// for(int i = 0; i < pairFreq.length; i++){
+		// 	System.out.printf("%d ", pairFreq[i]);
+		// }
+		// System.out.println();
 
 	}
 

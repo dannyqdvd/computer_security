@@ -2,27 +2,17 @@
 
 import java.util.*;
  
-abstract class HuffmanTree implements Comparable<HuffmanTree> {
-    public final int frequency; // the frequency of this tree
-    public HuffmanTree(int freq) { frequency = freq; }
+// abstract class HuffmanTree implements Comparable<HuffmanTree> {
+//     public final int frequency; // the frequency of this tree
+//     public HuffmanTree(int freq) { frequency = freq; }
  
-    // compares on the frequency
-    public int compareTo(HuffmanTree tree) {
-        return frequency - tree.frequency;
-    }
-}
+//     // compares on the frequency
+//     public int compareTo(HuffmanTree tree) {
+//         return frequency - tree.frequency;
+//     }
+// }
  
-class HuffmanLeaf extends HuffmanTree {
-    public final char value; // the character this leaf represents
- 
-    public HuffmanLeaf(int freq, char val) {
-        super(freq);
 
-        int shifted = (int) val + 65;
-        value = (char) shifted;
-
-    }
-}
 
 class PairHuffmanLeaf extends HuffmanTree {
     public final String value; // the character this leaf represents
@@ -30,11 +20,15 @@ class PairHuffmanLeaf extends HuffmanTree {
     public PairHuffmanLeaf(int freq, char val) {
         super(freq);
 
-        int firstchar = (int) val + 65;
-        int secondchar = firstchar + 65;
+        int firstchar = (int) val % 26 + 65;
+        int secondchar = (int) val / 26 + 65;
+
         StringBuilder s = new StringBuilder();
-        s.append((char) firstchar).append((char) secondchar);
+        s.append((char) firstchar);
+        s.append((char) secondchar);
         //value = (char) firstchar + (char) secondchar;
+        // System.out.print(s.toString());
+        // System.out.println();
         value = s.toString();
     }
 }
@@ -44,15 +38,15 @@ class PairHuffmanLeaf extends HuffmanTree {
 
 
  
-class HuffmanNode extends HuffmanTree {
-    public final HuffmanTree left, right; // subtrees
+// class PairHuffmanNode extends HuffmanTree {
+//     public final HuffmanTree left, right; // subtrees
  
-    public HuffmanNode(HuffmanTree l, HuffmanTree r) {
-        super(l.frequency + r.frequency);
-        left = l;
-        right = r;
-    }
-}
+//     public PairHuffmanNode(HuffmanTree l, HuffmanTree r) {
+//         super(l.frequency + r.frequency);
+//         left = l;
+//         right = r;
+//     }
+// }
  
 public class PairHuffmanCode {
 
@@ -65,7 +59,7 @@ public class PairHuffmanCode {
         // one for each non-empty character
         for (int i = 0; i < charFreqs.length; i++)
             if (charFreqs[i] > 0)
-                trees.offer(new HuffmanLeaf(charFreqs[i], (char)i ));
+                trees.offer(new PairHuffmanLeaf(charFreqs[i], (char)i ));
  
         assert trees.size() > 0;
         // loop until there is only one tree left
@@ -80,15 +74,15 @@ public class PairHuffmanCode {
         return trees.poll();
     }
  
-    public static void printCodes(HuffmanTree tree, StringBuffer prefix) {
+    public static void printPairCodes(HuffmanTree tree, StringBuffer prefix) {
         assert tree != null;
-        if (tree instanceof HuffmanLeaf) {
-            HuffmanLeaf leaf = (HuffmanLeaf)tree;
+        if (tree instanceof PairHuffmanLeaf) {
+            PairHuffmanLeaf leaf = (PairHuffmanLeaf)tree;
  
             // print out character, frequency, and code for this leaf (which is just the prefix)
             System.out.println(leaf.value + "\t" + leaf.frequency + "\t" + prefix);
-            HuffmanCode.encodingMap.put(leaf.value, prefix.toString());
-            HuffmanCode.decodingMap.put(prefix.toString(), leaf.value);
+            PairHuffmanCode.encodingMap.put(leaf.value, prefix.toString());
+            PairHuffmanCode.decodingMap.put(prefix.toString(), leaf.value);
 
 
  
@@ -97,12 +91,12 @@ public class PairHuffmanCode {
  
             // traverse left
             prefix.append('0');
-            printCodes(node.left, prefix);
+            printPairCodes(node.left, prefix);
             prefix.deleteCharAt(prefix.length()-1);
  
             // traverse right
             prefix.append('1');
-            printCodes(node.right, prefix);
+            printPairCodes(node.right, prefix);
             prefix.deleteCharAt(prefix.length()-1);
         }
     }
@@ -122,8 +116,8 @@ public class PairHuffmanCode {
         HuffmanTree tree = buildTree(freq);
  
         // print out results
-        System.out.println("LETTER\tFREQ\tHUFFMAN CODE");
-        printCodes(tree, new StringBuffer());
+        System.out.println("PAIR\tFREQ\tHUFFMAN CODE");
+        printPairCodes(tree, new StringBuffer());
     }
 
 

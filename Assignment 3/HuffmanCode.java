@@ -24,20 +24,7 @@ class HuffmanLeaf extends HuffmanTree {
     }
 }
 
-class PairHuffmanLeaf extends HuffmanTree {
-    public final String value; // the character this leaf represents
- 
-    public PairHuffmanLeaf(int freq, char val) {
-        super(freq);
 
-        int firstchar = (int) val + 65;
-        int secondchar = firstchar + 65;
-        StringBuilder s = new StringBuilder();
-        s.append((char) firstchar).append((char) secondchar);
-        //value = (char) firstchar + (char) secondchar;
-        value = s.toString();
-    }
-}
 
 
 
