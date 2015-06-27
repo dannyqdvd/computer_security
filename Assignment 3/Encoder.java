@@ -56,7 +56,7 @@ public class Encoder{
 		encodeFile();
 		System.out.printf("Entropy of this language is: %.2f\n", entropy );
 		System.out.printf("Average bits per symbol is: %.2f\n" ,bps);
-		double percentDiff = (bps - entropy) * 100;
+		double percentDiff = Math.abs(bps - entropy) * 100;
 		System.out.printf("Percent diference: %.2f%s\n" , percentDiff, "%");
 		//decode file
 		decodeFile();
@@ -78,7 +78,7 @@ public class Encoder{
 		p_encodeFile();
 		System.out.printf("Entropy of this language is: %.2f\n", pairEntropy);
 		System.out.printf("Average bits per symbol is: %.2f\n" ,pbps);
-		double ppercentDiff = (pbps - pairEntropy) * 100;
+		double ppercentDiff = Math.abs(pbps - pairEntropy) * 100;
 		System.out.printf("Percent diference: %.2f%s\n" , ppercentDiff, "%");
 		//decode pair
 		p_decodeFile();
