@@ -12,7 +12,7 @@ public class Encoder{
 
 	//array of huffman code for each letter
 	public static int [] encoded = new int[26];
-	public static double volume = 100.0 ;
+	public static int volume = 0 ;
 	public static double bps = 0.0;
 	public static String totalBitsUsed = "";
 
@@ -44,9 +44,13 @@ public class Encoder{
 		   freqFile = new File(args[0]);
 		}
 
+		volume = Integer.parseInt(args[1]);
+
 		//puts frequencies into array and calculates sum
 		readFreqFile(freqFile);
 		//generate huffman code
+		System.out.println();
+		System.out.println("Single Alphabet");
 		HuffmanCode.start(letterFreq);
 		//calcuate entropy
 		entropy = calcEntropy(letterFreq, sum);
@@ -67,22 +71,25 @@ public class Encoder{
 
 		//caculate pair arrays
 		System.out.println();
+		System.out.println("2-Symbol Derived Alphabet");
 		calcPairs();
 		PairHuffmanCode.start(pairFreq);
 
 
 		//calculate pair ;pbps must read then caculate
-		pairEntropy = calcEntropy(pairFreq, pairSum) ;
+		pairEntropy = calcEntropy(pairFreq, pairSum)/2 ;
 
 		//encoding pair
 		p_encodeFile();
 		System.out.printf("Entropy of this language is: %.2f\n", pairEntropy);
 		System.out.printf("Average bits per symbol is: %.2f\n" ,pbps);
 		double ppercentDiff = Math.abs(pbps - pairEntropy) * 100;
-		System.out.printf("Percent diference: %.2f%s\n" , ppercentDiff, "%");
+		System.out.printf("Percent difference: %.2f%s\n" , ppercentDiff, "%");
 		//decode pair
 		p_decodeFile();
 
+		System.out.println();
+		System.out.printf("1-symbol vs 2-symbol percent difference: %.1f%s\n" , Math.abs(pbps - bps)*100, "%");
 
 
 
@@ -235,7 +242,7 @@ public class Encoder{
 			ptotalBitsUsed += encoding;
 		}
 
-		pbps = (double)ptotalBitsUsed.length() / volume;
+		pbps = (double)ptotalBitsUsed.length() / volume / 2;
 
 		writer.close();
 
@@ -297,10 +304,7 @@ public class Encoder{
 
 	public static void calcPairs(){
 
-		pairSum = sum*sum;
-
-		System.out.printf("Pair sum: %d\n", pairSum);
-
+		pairSum = sum*sum * 2;
 
 		int pairIndex = 0;
 		for(int i = 0; i < letterFreq.length; i++){
@@ -311,11 +315,6 @@ public class Encoder{
 			}
 		}
 
-		//debug: print out new pairfreq array
-		// for(int i = 0; i < pairFreq.length; i++){
-		// 	System.out.printf("%d ", pairFreq[i]);
-		// }
-		// System.out.println();
 
 	}
 

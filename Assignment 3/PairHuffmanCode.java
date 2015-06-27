@@ -104,14 +104,7 @@ public class PairHuffmanCode {
  
     public static void start(int [] freq) {
  
-        // we will assume that all our characters will have
-        // code less than 256, for simplicity
-        //int[] charFreqs = args[0];
-        // read each character and record the frequencies
-        // for (char c : test.toCharArray())
-        //     charFreqs[c]++;
- 
-        // build tree
+
         
         HuffmanTree tree = buildTree(freq);
  
