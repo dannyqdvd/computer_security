@@ -56,14 +56,50 @@ public class AES{
 		0x17, 0x2B, 0x04, 0x7E, 0xBA, 0x77, 0xD6, 0x26, 0xE1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0C, 0x7D
 	};
 
+	////////////////////////  the mixColumns Tranformation ////////////////////////
+
+
+    final static int[] LogTable = {
+	0,   0,  25,   1,  50,   2,  26, 198,  75, 199,  27, 104,  51, 238, 223,   3, 
+	100,   4, 224,  14,  52, 141, 129, 239,  76, 113,   8, 200, 248, 105,  28, 193, 
+	125, 194,  29, 181, 249, 185,  39, 106,  77, 228, 166, 114, 154, 201,   9, 120, 
+	101,  47, 138,   5,  33,  15, 225,  36,  18, 240, 130,  69,  53, 147, 218, 142, 
+	150, 143, 219, 189,  54, 208, 206, 148,  19,  92, 210, 241,  64,  70, 131,  56, 
+	102, 221, 253,  48, 191,   6, 139,  98, 179,  37, 226, 152,  34, 136, 145,  16, 
+	126, 110,  72, 195, 163, 182,  30,  66,  58, 107,  40,  84, 250, 133,  61, 186, 
+	43, 121,  10,  21, 155, 159,  94, 202,  78, 212, 172, 229, 243, 115, 167,  87, 
+	175,  88, 168,  80, 244, 234, 214, 116,  79, 174, 233, 213, 231, 230, 173, 232, 
+	44, 215, 117, 122, 235,  22,  11, 245,  89, 203,  95, 176, 156, 169,  81, 160, 
+	127,  12, 246, 111,  23, 196,  73, 236, 216,  67,  31,  45, 164, 118, 123, 183, 
+	204, 187,  62,  90, 251,  96, 177, 134,  59,  82, 161, 108, 170,  85,  41, 157, 
+	151, 178, 135, 144,  97, 190, 220, 252, 188, 149, 207, 205,  55,  63,  91, 209, 
+	83,  57, 132,  60,  65, 162, 109,  71,  20,  42, 158,  93,  86, 242, 211, 171, 
+	68,  17, 146, 217,  35,  32,  46, 137, 180, 124, 184,  38, 119, 153, 227, 165, 
+	103,  74, 237, 222, 197,  49, 254,  24,  13,  99, 140, 128, 192, 247, 112,   7};
+
+    final static int[] AlogTable = {
+	1,   3,   5,  15,  17,  51,  85, 255,  26,  46, 114, 150, 161, 248,  19,  53, 
+	95, 225,  56,  72, 216, 115, 149, 164, 247,   2,   6,  10,  30,  34, 102, 170, 
+	229,  52,  92, 228,  55,  89, 235,  38, 106, 190, 217, 112, 144, 171, 230,  49, 
+	83, 245,   4,  12,  20,  60,  68, 204,  79, 209, 104, 184, 211, 110, 178, 205, 
+	76, 212, 103, 169, 224,  59,  77, 215,  98, 166, 241,   8,  24,  40, 120, 136, 
+	131, 158, 185, 208, 107, 189, 220, 127, 129, 152, 179, 206,  73, 219, 118, 154, 
+	181, 196,  87, 249,  16,  48,  80, 240,  11,  29,  39, 105, 187, 214,  97, 163, 
+	254,  25,  43, 125, 135, 146, 173, 236,  47, 113, 147, 174, 233,  32,  96, 160, 
+	251,  22,  58,  78, 210, 109, 183, 194,  93, 231,  50,  86, 250,  21,  63,  65, 
+	195,  94, 226,  61,  71, 201,  64, 192,  91, 237,  44, 116, 156, 191, 218, 117, 
+	159, 186, 213, 100, 172, 239,  42, 126, 130, 157, 188, 223, 122, 142, 137, 128, 
+	155, 182, 193,  88, 232,  35, 101, 175, 234,  37, 111, 177, 200,  67, 197,  84, 
+	252,  31,  33,  99, 165, 244,   7,   9,  27,  45, 119, 153, 176, 203,  70, 202, 
+	69, 207,  74, 222, 121, 139, 134, 145, 168, 227,  62,  66, 198,  81, 243,  14, 
+	18,  54,  90, 238,  41, 123, 141, 140, 143, 138, 133, 148, 167, 242,  13,  23, 
+	57,  75, 221, 124, 132, 151, 162, 253,  28,  36, 108, 180, 199,  82, 246,   1};
 	
 
 
 	public static int [][] plaintext_matrix = new int[4][4];
 	public static int [][] cipherKey_matrix = new int[4][8];
-
-
-
+	public static int [][] st = new int[4][4];
 
 
 	public static void main (String args[]) throws IOException {
@@ -86,6 +122,8 @@ public class AES{
 		// }
 
 
+
+
 		/*Debugging............................................*/
 		String plaintext = "00112233445566778899AABBCCDDEEFF";
 		String cipherKey = "0000000000000000000000000000000000000000000000000000000000000000";
@@ -96,33 +134,16 @@ public class AES{
 		//put plain text into 4x4 matrix
 		printMatrices(plaintext, cipherKey);
 
-		//key expansion
-    	System.out.println("The expanded key is:");
-		int[][] r0 = cipherKey_matrix;
-		int[][] r1 = keyExpansion(r0);
-		int[][] r2 = keyExpansion(r1);
-		int[][] r3 = keyExpansion(r2);
-		int[][] r4 = keyExpansion(r3);
-		int[][] r5 = keyExpansion(r4);
-		int[][] r6 = keyExpansion(r5);
-		int[][] r7 = keyExpansion(r6);
-		int[][] r8 = keyExpansion(r7);
-		int[][] r9 = keyExpansion(r8);
-		int[][] r10 = keyExpansion(r9);
-		int[][] r11 = keyExpansion(r10);
-		int[][] r12 = keyExpansion(r11);
-		int[][] r13 = keyExpansion(r9);
-		int[][] r14 = keyExpansion(r10);
-	
+		if(option.equals("e"))
+		{
+			encrypt();
+		}
+		else if(option.equals("d"))
+		{
+			decrypt();
+		}
 
-		//do key expansion for 256 bit key
-		//print key expansion
-	
-	
-
-
-
-
+		
 		////////////Encrpytion/////////////////////
 
 		//initial round - add round key
@@ -141,8 +162,6 @@ public class AES{
 		//
 
 
-
-
 		//decrypting file 
 		//You'll read in a line, converting from Hex to binary for storage into your state array. 
 		//Apply the AES algorithm to encrypt the string as stored, and 
@@ -150,14 +169,8 @@ public class AES{
 
 	}
 
-
-
-
-
-
 	public static void printMatrices(String plaintext, String cipherKey){
 
-		
 		int pt_counter = 0;
 		for(int i = 0; i < 4; i++){
 			for(int j = 0; j < 4; j++){
@@ -296,20 +309,7 @@ public class AES{
 			System.out.println();
 		}
 
-
-
 		return transkey;
-
-
-
-
-
-
-
-	
-
-
-
 
 	}//end method
 
@@ -325,16 +325,253 @@ public class AES{
 
 
 
+	public static int[][] AddRoundKey(int [][] state, int [][] rk) 
+	{
+		int [][] temp = new int[4][4];
+		for(int i = 0; i < 4 ; i++)
+		{
+			for(int j = 0; j < 4; j++)
+			{
+				temp[i][j] = state[j][i] ^ rk[i][j];
+			}
+		}
 
+		return temp;
+	}
 
+	public static void subBytes(int [][]in) 
+	{
+		for(int i = 0; i < 4 ; i++)
+		{
+			for(int j = 0; j < 4; j++)
+			{
+				in[i][j] = sbox[(in[i][j])];
+			}
+		}
+	}
 
+	public static int[][] shiftRows(int [][]in) 
+	{
+		int [][] temp = new int[4][4];
 
+		for(int i = 0; i < 1 ; i++)
+		{
+			for(int j = 0; j < 4; j++)
+			{
+				temp[i][j] = in[i][j];
+			}
+		}
 
+		//2nd row
+		temp[1][0] = in[1][1];
+		temp[1][1] = in[1][2];
+		temp[1][2] = in[1][3];
+		temp[1][3] = in[1][0];
+
+		//3rd row
+		temp[2][0] = in[2][2];
+		temp[2][1] = in[2][3];
+		temp[2][2] = in[2][0];
+		temp[2][3] = in[2][1];
+
+		//4th row
+		temp[3][0] = in[3][3];
+		temp[3][1] = in[3][0];
+		temp[3][2] = in[3][1];
+		temp[3][3] = in[3][2];
+
+		return temp;
+	}
+
+	private static int mul (int a, int b) 
+	{
+		int inda = (a < 0) ? (a + 256) : a;
+		int indb = (b < 0) ? (b + 256) : b;
+
+		if ( (a != 0) && (b != 0) ) {
+		    int index = (LogTable[inda] + LogTable[indb]);
+		    int val = (int)(AlogTable[ index % 255 ] );
+		    return val;
+		}
+		else 
+		    return 0;
+    } // mul
+
+	public static void mixColumn2 (int c) 
+	{
+		// This is another alternate version of mixColumn, using the 
+		// logtables to do the computation.
+		
+		int a[] = new int[4];
+		
+		// note that a is just a copy of st[.][c]
+		for (int i = 0; i < 4; i++) 
+		    a[i] = st[i][c];
+		
+		// This is exactly the same as mixColumns1, if 
+		// the mul columns somehow match the b columns there.
+		st[0][c] = (int)(mul(2,a[0]) ^ a[2] ^ a[3] ^ mul(3,a[1]));
+		st[1][c] = (int)(mul(2,a[1]) ^ a[3] ^ a[0] ^ mul(3,a[2]));
+		st[2][c] = (int)(mul(2,a[2]) ^ a[0] ^ a[1] ^ mul(3,a[3]));
+		st[3][c] = (int)(mul(2,a[3]) ^ a[1] ^ a[2] ^ mul(3,a[0]));
+	} // mixColumn2
+
+	public static void invMixColumn2 (int c) 
+	{
+		int a[] = new int[4];
+			
+		// note that a is just a copy of st[.][c]
+		for (int i = 0; i < 4; i++) 
+		    a[i] = st[i][c];
+			
+		st[0][c] = (int)(mul(0xE,a[0]) ^ mul(0xB,a[1]) ^ mul(0xD, a[2]) ^ mul(0x9,a[3]));
+		st[1][c] = (int)(mul(0xE,a[1]) ^ mul(0xB,a[2]) ^ mul(0xD, a[3]) ^ mul(0x9,a[0]));
+		st[2][c] = (int)(mul(0xE,a[2]) ^ mul(0xB,a[3]) ^ mul(0xD, a[0]) ^ mul(0x9,a[1]));
+		st[3][c] = (int)(mul(0xE,a[3]) ^ mul(0xB,a[0]) ^ mul(0xD, a[1]) ^ mul(0x9,a[2]));
+	} // invMixColumn2
 	       
+	public static void printState ()
+	{		
+		for(int i = 0; i < 4; i++){
+			for(int j = 0; j < 4; j++){
+				System.out.printf("%02X ", (st[j][i]));
+			}
+		}
+		System.out.println();
+	}
 
+	public static void encrypt() throws IOException
+	{
+		//key expansion
+    	System.out.println("The expanded key is:");
+		int[][] r0 = cipherKey_matrix;
+		int[][] r1 = keyExpansion(r0);
+		int[][] r2 = keyExpansion(r1);
+		int[][] r3 = keyExpansion(r2);
+		int[][] r4 = keyExpansion(r3);
+		int[][] r5 = keyExpansion(r4);
+		int[][] r6 = keyExpansion(r5);
+		int[][] r7 = keyExpansion(r6);
+		int[][] r8 = keyExpansion(r7);
+		int[][] r9 = keyExpansion(r8);
+		int[][] r10 = keyExpansion(r9);
+		int[][] r11 = keyExpansion(r10);
+		int[][] r12 = keyExpansion(r11);
+		int[][] r13 = keyExpansion(r9);
+		int[][] r14 = keyExpansion(r10);
+	
 
+		//do key expansion for 256 bit key
+		//print key expansion
+	
+		//intial round, roundkey on initial matrix
+		st = AddRoundKey(plaintext_matrix, r0);
 
+		System.out.println(); 
+		System.out.println("After AddRoundKey(0):");
+		for(int i = 0; i < 4; i++){
+			for(int j = 0; j < 4; j++){
+				System.out.printf("%02X ", (st[j][i]));
+			}
+		}
+		System.out.println(); 
 
+		int rounds = 1;
+		while(rounds < 14)
+		{
+			subBytes(st);
+			System.out.println("After subBytes:");
+			printState();
+			st = shiftRows(st);
+					System.out.println("After shiftRows:");
+					printState();
+
+			int mixcol = 0;
+			while(mixcol < 4)
+			{
+				mixColumn2(mixcol);
+				mixcol++;
+			}
+			System.out.println("After mixColumns:");
+			printState();
+
+			if(rounds == 1)
+			{
+				st = AddRoundKey(st, r1);
+			}
+			else if(rounds == 2)
+			{
+				st = AddRoundKey(st, r2);
+			}
+			else if(rounds == 3)
+			{
+				st = AddRoundKey(st, r3);
+			}
+			else if(rounds == 4)
+			{
+				st = AddRoundKey(st, r4);
+			}
+			else if(rounds == 5)
+			{
+				st = AddRoundKey(st, r5);
+			}
+			else if(rounds == 6)
+			{
+				st = AddRoundKey(st, r6);
+			}
+			else if(rounds == 7)
+			{
+				st = AddRoundKey(st, r7);
+			}
+			else if(rounds == 8)
+			{
+				st = AddRoundKey(st, r8);
+			}
+			else if(rounds == 9)
+			{
+				st = AddRoundKey(st, r9);
+			}
+			else if(rounds == 10)
+			{
+				st = AddRoundKey(st, r10);
+			}
+			else if(rounds == 11)
+			{
+				st = AddRoundKey(st, r11);
+			}
+			else if(rounds == 12)
+			{
+				st = AddRoundKey(st, r12);
+			}
+			else if(rounds == 13)
+			{
+				st = AddRoundKey(st, r13);
+			}
+
+			System.out.printf("After AddRoundKey(%d):\n", rounds);
+			printState();
+
+			rounds++;
+
+		}
+
+		File enc = new File ("plaintext.enc");
+		BufferedWriter writer = new BufferedWriter(new FileWriter(enc));
+
+		writer.write("The ciphertext:\n");
+		for(int i = 0; i < 4; i++){
+			for(int j = 0; j < 4; j++){
+				writer.write(String.format("%02X ", (st[j][i])));
+			}
+			writer.newLine();
+		}
+		writer.close();
+	}
+
+	public static void decrypt ()
+	{
+
+	}
 
 	
 }
