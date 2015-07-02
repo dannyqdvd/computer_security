@@ -65,6 +65,7 @@ public class AES{
 
 
 
+
 	public static void main (String args[]) throws IOException {
 	//java AES option keyFile inputFile
 
@@ -87,8 +88,8 @@ public class AES{
 
 		/*Debugging............................................*/
 		String plaintext = "00112233445566778899AABBCCDDEEFF";
-		//String cipherKey = "0000000000000000000000000000000000000000000000000000000000000000";
-		String cipherKey = "FFEEDDCCBBAA00998877665544332211FFEEDDCCBBAA00998877665544332211";
+		String cipherKey = "0000000000000000000000000000000000000000000000000000000000000000";
+		//String cipherKey = "FFEEDDCCBBAA00998877665544332211FFEEDDCCBBAA00998877665544332211";
 		/*End Debugging........................................*/
 		//System.out.printf("Hi! Option: %s\n", option);
 
@@ -96,21 +97,28 @@ public class AES{
 		printMatrices(plaintext, cipherKey);
 
 		//key expansion
-		keyExpansion();
-
+    	System.out.println("The expanded key is:");
+		int[][] r0 = cipherKey_matrix;
+		int[][] r1 = keyExpansion(r0);
+		int[][] r2 = keyExpansion(r1);
+		int[][] r3 = keyExpansion(r2);
+		int[][] r4 = keyExpansion(r3);
+		int[][] r5 = keyExpansion(r4);
+		int[][] r6 = keyExpansion(r5);
+		int[][] r7 = keyExpansion(r6);
+		int[][] r8 = keyExpansion(r7);
+		int[][] r9 = keyExpansion(r8);
+		int[][] r10 = keyExpansion(r9);
+		int[][] r11 = keyExpansion(r10);
+		int[][] r12 = keyExpansion(r11);
+		int[][] r13 = keyExpansion(r9);
+		int[][] r14 = keyExpansion(r10);
+	
 
 		//do key expansion for 256 bit key
 		//print key expansion
-		//do it 14 times
-			
-			//rotword()
-				// -take last column of round
-				// 	-first item in column goes to the end, everything shifts up
-				// -subbyte each item with s box
-				// -XOR it with each column in the key round
-
-				// -returns column in new round
-
+	
+	
 
 
 
@@ -143,15 +151,6 @@ public class AES{
 	}
 
 
-	private static byte[] stringToBytes(String input) {
-	    int length = input.length();
-	    byte[] output = new byte[length / 2];
-
-	    for (int i = 0; i < length; i += 2) {
-	        output[i / 2] = (byte) ((Character.digit(input.charAt(i), 16) << 4) | Character.digit(input.charAt(i+1), 16));
-	    }
-	    return output;
-	}
 
 
 
@@ -214,6 +213,7 @@ public class AES{
 
 	}
 
+
 	public static void rotate(int [] in) {
 	        int a,c;
 	        a = in[0];
@@ -237,11 +237,98 @@ public class AES{
 	}
 
 	//pass entire key array into it
-	public static void keyExpansion() {
+	public static int [][] keyExpansion(int[][] cm) {
+
 	    int [] tempCol = new int[4];
+	    int [] tempCol2;
+	    int [] tempCol3 = new int[4];
 	    int c = 32;
 		int i = 1;
 	    int a;
+
+
+	    int[][] transCipherMatrix = transposeMatrix(cm);
+	    int b=1;
+		int p = 0;
+		int[][] exkey = new int [8][8];
+
+		//while(p<14){
+
+		i = 0;
+		for(int k = 0; k < 8; k++){
+
+			for(int j = 0; j < 4; j++){
+				tempCol[j] = transCipherMatrix[k][j];
+				b++; 
+			}
+
+			tempCol2 = tempCol;
+
+			schedule_core(tempCol, i);
+			i++;
+
+				if(b % 32 ==16){
+				for(a = 0; a < 4; a++) {
+					tempCol[a] = sbox[tempCol[a]];
+				}
+			}
+			
+
+			for(a = 0; a < 4; a++) {
+			    tempCol[a] = transCipherMatrix[k][a]^ tempCol[a];
+			    
+			}
+
+
+			exkey[i-1] = tempCol; 
+
+			
+		}
+
+		int[][] transkey = transposeMatrix(exkey);
+		System.out.println();
+
+
+		for(int row = 0; row < transkey.length; row++){
+			for(int col = 0; col < transkey[row].length; col++){
+				System.out.printf("%02X", (transkey[row][col]));
+			}
+			System.out.println();
+		}
+
+
+
+		return transkey;
+
+
+
+
+
+
+
+	
+
+
+
+
+	}//end method
+
+
+
+	public static int[][] transposeMatrix(int [][] m){
+	    int[][] temp = new int[m[0].length][m.length];
+	    for (int i = 0; i < m.length; i++)
+	        for (int j = 0; j < m[0].length; j++)
+	            temp[j][i] = m[i][j];
+	    return temp;
+	}
+
+
+
+
+
+
+
 
 	       
 
@@ -249,5 +336,7 @@ public class AES{
 
 
 
-	}
+	
 }
+
+
