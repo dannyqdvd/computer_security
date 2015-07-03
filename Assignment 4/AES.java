@@ -109,63 +109,46 @@ public class AES{
 		String option = args[0];
 		
 
-		// //keyfile - contains a single line of 64 hex characters
-		// File keyFile = null;
-		// if (0 < args.length) {
-		//    freqFile = new File(args[1]);
-		// }
+		//keyfile - contains a single line of 64 hex characters
+		File keyFile = null;
+		if (0 < args.length) {
+		   keyFile = new File(args[1]);
+		}
 
-		// //inputfile - 32 hex characters per line
-		// File inputFile = null;
-		// if (0 < args.length) {
-		//    freqFile = new File(args[2]);
-		// }
+		//inputfile - 32 hex characters per line
+		File inputFile = null;
+		if (0 < args.length) {
+		   inputFile = new File(args[2]);
+		}
 
+		FileReader fr = new FileReader(inputFile);
+		BufferedReader br = new BufferedReader(fr);
+		Scanner scanner = new Scanner (inputFile);
+		String plaintext = scanner.nextLine();
 
+		fr.close();
 
+		FileReader fr2 = new FileReader(keyFile);
+		BufferedReader br2 = new BufferedReader(fr);
+		Scanner scanner2 = new Scanner (keyFile);
 
-		/*Debugging............................................*/
-		String plaintext = "00112233445566778899AABBCCDDEEFF";
-		String cipherKey = "0000000000000000000000000000000000000000000000000000000000000000";
-		//String cipherKey = "FFEEDDCCBBAA00998877665544332211FFEEDDCCBBAA00998877665544332211";
-		/*End Debugging........................................*/
-		//System.out.printf("Hi! Option: %s\n", option);
+		String cipherKey = scanner2.nextLine();
 
-		//put plain text into 4x4 matrix
-		printMatrices(plaintext, cipherKey);
+		fr2.close();
+
 
 		if(option.equals("e"))
 		{
+			//put plain text into 4x4 matrix
+			printMatrices(plaintext, cipherKey);
 			encrypt();
+
 		}
 		else if(option.equals("d"))
 		{
 			decrypt();
 		}
 
-		
-		////////////Encrpytion/////////////////////
-
-		//initial round - add round key
-
-		//13 rounds 
-		///subbytes
-		//shift rowa
-		//mix columns
-		//add round key
-
-		//final round
-		//subbytes
-		//shiftrows
-		//addroundkey
-
-		//
-
-
-		//decrypting file 
-		//You'll read in a line, converting from Hex to binary for storage into your state array. 
-		//Apply the AES algorithm to encrypt the string as stored, and 
-		//write out the ciphertext in Hex notation to the output file. 
 
 	}
 
@@ -350,7 +333,51 @@ public class AES{
 		}
 	}
 
+	public static void invsubBytes(int [][]in) 
+	{
+		for(int i = 0; i < 4 ; i++)
+		{
+			for(int j = 0; j < 4; j++)
+			{
+				in[i][j] = isbox[(in[i][j])];
+			}
+		}
+	}
+
 	public static int[][] shiftRows(int [][]in) 
+	{
+		int [][] temp = new int[4][4];
+
+		for(int i = 0; i < 1 ; i++)
+		{
+			for(int j = 0; j < 4; j++)
+			{
+				temp[i][j] = in[i][j];
+			}
+		}
+
+		//2nd row
+		temp[1][0] = in[1][1];
+		temp[1][1] = in[1][2];
+		temp[1][2] = in[1][3];
+		temp[1][3] = in[1][0];
+
+		//3rd row
+		temp[2][0] = in[2][2];
+		temp[2][1] = in[2][3];
+		temp[2][2] = in[2][0];
+		temp[2][3] = in[2][1];
+
+		//4th row
+		temp[3][0] = in[3][3];
+		temp[3][1] = in[3][0];
+		temp[3][2] = in[3][1];
+		temp[3][3] = in[3][2];
+
+		return temp;
+	}
+
+	public static int[][] invshiftRows(int [][]in) 
 	{
 		int [][] temp = new int[4][4];
 
@@ -551,6 +578,18 @@ public class AES{
 			System.out.printf("After AddRoundKey(%d):\n", rounds);
 			printState();
 
+
+			subBytes(st);
+			System.out.println("After subBytes:");
+			printState();
+			st = shiftRows(st);
+			System.out.println("After shiftRows:");
+			printState();
+			st = AddRoundKey(st, r14);
+			System.out.printf("After AddRoundKey(14):\n");
+			printState();
+
+
 			rounds++;
 
 		}
@@ -558,7 +597,7 @@ public class AES{
 		File enc = new File ("plaintext.enc");
 		BufferedWriter writer = new BufferedWriter(new FileWriter(enc));
 
-		writer.write("The ciphertext:\n");
+		writer.write("TThe decryption of the ciphertext:\n");
 		for(int i = 0; i < 4; i++){
 			for(int j = 0; j < 4; j++){
 				writer.write(String.format("%02X ", (st[j][i])));
@@ -568,9 +607,135 @@ public class AES{
 		writer.close();
 	}
 
-	public static void decrypt ()
+	public static void decrypt () throws IOException
 	{
 
+		int[][] r0 = cipherKey_matrix;
+		int[][] r1 = keyExpansion(r0);
+		int[][] r2 = keyExpansion(r1);
+		int[][] r3 = keyExpansion(r2);
+		int[][] r4 = keyExpansion(r3);
+		int[][] r5 = keyExpansion(r4);
+		int[][] r6 = keyExpansion(r5);
+		int[][] r7 = keyExpansion(r6);
+		int[][] r8 = keyExpansion(r7);
+		int[][] r9 = keyExpansion(r8);
+		int[][] r10 = keyExpansion(r9);
+		int[][] r11 = keyExpansion(r10);
+		int[][] r12 = keyExpansion(r11);
+		int[][] r13 = keyExpansion(r9);
+		int[][] r14 = keyExpansion(r10);
+
+		st = AddRoundKey(st, r14);
+		System.out.printf("After AddRoundKey(14):\n");
+		printState();
+
+		st = shiftRows(st);
+		System.out.println("After shiftRows:");
+		printState();
+
+		subBytes(st);
+		System.out.println("After subBytes:");
+		printState();
+
+
+
+		int rounds = 13;
+		while(rounds >= 0)
+		{
+
+			System.out.println("After mixColumns:");
+			printState();
+
+			st = shiftRows(st);
+			System.out.println("After shiftRows:");
+			printState();
+
+			subBytes(st);
+			System.out.println("After subBytes:");
+			printState();
+
+
+			if(rounds == 1)
+			{
+				st = AddRoundKey(st, r1);
+			}
+			else if(rounds == 2)
+			{
+				st = AddRoundKey(st, r2);
+			}
+			else if(rounds == 3)
+			{
+				st = AddRoundKey(st, r3);
+			}
+			else if(rounds == 4)
+			{
+				st = AddRoundKey(st, r4);
+			}
+			else if(rounds == 5)
+			{
+				st = AddRoundKey(st, r5);
+			}
+			else if(rounds == 6)
+			{
+				st = AddRoundKey(st, r6);
+			}
+			else if(rounds == 7)
+			{
+				st = AddRoundKey(st, r7);
+			}
+			else if(rounds == 8)
+			{
+				st = AddRoundKey(st, r8);
+			}
+			else if(rounds == 9)
+			{
+				st = AddRoundKey(st, r9);
+			}
+			else if(rounds == 10)
+			{
+				st = AddRoundKey(st, r10);
+			}
+			else if(rounds == 11)
+			{
+				st = AddRoundKey(st, r11);
+			}
+			else if(rounds == 12)
+			{
+				st = AddRoundKey(st, r12);
+			}
+			else if(rounds == 13)
+			{
+				st = AddRoundKey(st, r13);
+			}
+			System.out.printf("After AddRoundKey(%d):\n", rounds);
+			printState();
+
+
+			int mixcol = 0;
+			while(mixcol < 4)
+			{
+				invMixColumn2(mixcol);
+				mixcol++;
+			}
+
+
+			rounds--;
+
+		}
+
+		File enc = new File ("plaintext.enc");
+		BufferedWriter writer = new BufferedWriter(new FileWriter(enc));
+
+		writer.write("The plaintext:\n");
+		for(int i = 0; i < 4; i++){
+			for(int j = 0; j < 4; j++){
+				writer.write(String.format("%02X ", (st[j][i])));
+			}
+			writer.newLine();
+		}
+		writer.close();
+		
 	}
 
 	
