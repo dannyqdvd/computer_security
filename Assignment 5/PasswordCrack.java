@@ -133,7 +133,53 @@ public class PasswordCrack{
 
 			//TODO: append and prepend 
 			//fNameE = prepend(ftmp)
-			//fNameE = append(ftmp)
+			for(int i = 0; i < characters.length(); i++){
+				ftmp = prepend(firstName, characters.charAt(i));
+				fNameE = jcrypt.crypt(salt, ftmp);
+				ltmp = prepend(lastName, characters.charAt(i));
+				lNameE = jcrypt.crypt(salt, ltmp);
+				wtmp = prepend(wholeName, characters.charAt(i));
+				wNameE = jcrypt.crypt(salt, wtmp);
+				if(fNameE.equals(encryptedPasswd)){
+					System.out.printf("Password for %s %s is: %s\n", firstName, lastName, ftmp);
+					return true;
+				}
+				else if (lNameE.equals(encryptedPasswd) ){
+					System.out.printf("Password for %s %s is: %s\n", firstName, lastName, ltmp);
+					return true;
+
+				}
+				else if (wNameE.equals(encryptedPasswd) ){
+					System.out.printf("Password for %s %s is: %s\n", firstName, lastName, wtmp);
+					return true;
+				}
+			}
+
+
+			//append
+			for(int i = 0; i < characters.length(); i++){
+
+				ftmp = append(firstName, characters.charAt(i));
+				fNameE = jcrypt.crypt(salt, ftmp);
+				ltmp = append(lastName, characters.charAt(i));
+				lNameE = jcrypt.crypt(salt, ltmp);
+				wtmp = append(wholeName, characters.charAt(i));
+				wNameE = jcrypt.crypt(salt, wtmp);
+				if(fNameE.equals(encryptedPasswd)){
+					System.out.printf("Password for %s %s is: %s\n", firstName, lastName, ftmp);
+					return true;
+				}
+				else if (lNameE.equals(encryptedPasswd) ){
+					System.out.printf("Password for %s %s is: %s\n", firstName, lastName, ltmp);
+					return true;
+
+				}
+				else if (wNameE.equals(encryptedPasswd) ){
+					System.out.printf("Password for %s %s is: %s\n", firstName, lastName, wtmp);
+					return true;
+				}
+			}
+
 
 			//delete first char
 			ftmp = deleteFirstChar(firstName);
@@ -631,7 +677,7 @@ public class PasswordCrack{
 	}
 
 	public static String duplicateString(String w){
-		String r = w +w;
+		String r = w + w;
 		return r;
 
 	}
