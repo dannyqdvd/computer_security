@@ -29,6 +29,9 @@ public class PasswordCrack{
 		System.out.println();
 		Scanner scanner = new Scanner (passwd);
 
+		int cracked = 0;
+		int uncracked = 0;
+
 		while(scanner.hasNextLine() ){
 			String line = scanner.nextLine();
 			String[] tokens = line.split(":");
@@ -69,10 +72,15 @@ public class PasswordCrack{
 			if(!foundPasswd){
 				foundPasswd = checkDictionary(fullName, dict, 3, salt, encryptedPasswd);
 			}
+	
 
 			//no passwords found
 			if(!foundPasswd){
 				System.out.printf("No passwords found for %s %s\n", firstName, lastName);
+				uncracked++;
+			}
+			else{
+				cracked++;
 			}
 
 			System.out.println();
@@ -83,6 +91,9 @@ public class PasswordCrack{
 
 		//close password file
 		fr.close();
+		System.out.printf("Cracked passwords: %d\n", cracked);
+		System.out.printf("Uncracked passwords: %d\n", uncracked);
+
 
 
 
@@ -122,7 +133,19 @@ public class PasswordCrack{
 			// System.out.printf("jcrypted Last name: %s\n", lNameE);
 			// System.out.printf("jcrypted Whole name: %s\n", wNameE);
 			//check to see if password is matched
-			if(fNameE.equals(encryptedPasswd) || lNameE.equals(encryptedPasswd) || wNameE.equals(encryptedPasswd) ) {
+	
+
+			if(fNameE.equals(encryptedPasswd)){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, fNameE);
+				return true;
+			}
+			else if (lNameE.equals(encryptedPasswd) ){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, lNameE);
+				return true;
+
+			}
+			else if (wNameE.equals(encryptedPasswd) ){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, wNameE);
 				return true;
 			}
 
@@ -131,7 +154,6 @@ public class PasswordCrack{
 		//mangled name jcrypted
 		else if(scanType == 2){
 
-			//TODO: append and prepend 
 			//fNameE = prepend(ftmp)
 			for(int i = 0; i < characters.length(); i++){
 				ftmp = prepend(firstName, characters.charAt(i));
@@ -413,12 +435,179 @@ public class PasswordCrack{
 				return true;
 			}
 
-			// toggleString2
-			ftmp = toggleString2(firstName);
+
+
+
+
+		}
+
+		//mangle 2
+		else if(scanType == 3){
+
+			//name jcrypted
+			fNameE = jcrypt.crypt(salt, firstName);
+			lNameE = jcrypt.crypt(salt, lastName);
+
+			//fNameE = prepend(ftmp)
+			for(int i = 0; i < characters.length(); i++){
+				ftmp = prepend(firstName, characters.charAt(i));
+				fNameE = jcrypt.crypt(salt, ftmp);
+				ltmp = prepend(lastName, characters.charAt(i));
+				lNameE = jcrypt.crypt(salt, ltmp);
+				wtmp = prepend(wholeName, characters.charAt(i));
+				wNameE = jcrypt.crypt(salt, wtmp);
+				if(fNameE.equals(encryptedPasswd)){
+					System.out.printf("Password for %s %s is: %s\n", firstName, lastName, ftmp);
+					return true;
+				}
+				else if (lNameE.equals(encryptedPasswd) ){
+					System.out.printf("Password for %s %s is: %s\n", firstName, lastName, ltmp);
+					return true;
+
+				}
+				else if (wNameE.equals(encryptedPasswd) ){
+					System.out.printf("Password for %s %s is: %s\n", firstName, lastName, wtmp);
+					return true;
+				}
+			}
+
+
+			//append
+			for(int i = 0; i < characters.length(); i++){
+
+				ftmp = append(firstName, characters.charAt(i));
+				fNameE = jcrypt.crypt(salt, ftmp);
+				ltmp = append(lastName, characters.charAt(i));
+				lNameE = jcrypt.crypt(salt, ltmp);
+				wtmp = append(wholeName, characters.charAt(i));
+				wNameE = jcrypt.crypt(salt, wtmp);
+				if(fNameE.equals(encryptedPasswd)){
+					System.out.printf("Password for %s %s is: %s\n", firstName, lastName, ftmp);
+					return true;
+				}
+				else if (lNameE.equals(encryptedPasswd) ){
+					System.out.printf("Password for %s %s is: %s\n", firstName, lastName, ltmp);
+					return true;
+
+				}
+				else if (wNameE.equals(encryptedPasswd) ){
+					System.out.printf("Password for %s %s is: %s\n", firstName, lastName, wtmp);
+					return true;
+				}
+			}
+
+
+			//delete first char
+			ftmp = deleteFirstChar(firstName);
 			fNameE = jcrypt.crypt(salt, ftmp);
-			ltmp = toggleString2(lastName);
+			ltmp = deleteFirstChar(lastName);
 			lNameE = jcrypt.crypt(salt, ltmp);
-			wtmp = toggleString2(wholeName);
+			wtmp = deleteFirstChar(wholeName);
+			wNameE = jcrypt.crypt(salt, wtmp);
+			if(fNameE.equals(encryptedPasswd)){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, ftmp);
+				return true;
+			}
+			else if (lNameE.equals(encryptedPasswd) ){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, ltmp);
+				return true;
+
+			}
+			else if (wNameE.equals(encryptedPasswd) ){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, wtmp);
+				return true;
+			}
+
+			//delete last char
+			ftmp = deleteLastChar(firstName);
+			fNameE = jcrypt.crypt(salt, ftmp);
+			ltmp = deleteLastChar(lastName);
+			lNameE = jcrypt.crypt(salt, ltmp);
+			wtmp = deleteLastChar(wholeName);
+			wNameE = jcrypt.crypt(salt, wtmp);
+			if(fNameE.equals(encryptedPasswd)){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, ftmp);
+				return true;
+			}
+			else if (lNameE.equals(encryptedPasswd) ){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, ltmp);
+				return true;
+
+			}
+			else if (wNameE.equals(encryptedPasswd) ){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, wtmp);
+				return true;
+			}
+
+			//revString
+			ftmp = revString(firstName);
+			fNameE = jcrypt.crypt(salt, ftmp);
+			ltmp = revString(lastName);
+			lNameE = jcrypt.crypt(salt, ltmp);
+			wtmp = revString(wholeName);
+			wNameE = jcrypt.crypt(salt, wtmp);
+			if(fNameE.equals(encryptedPasswd)){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, ftmp);
+				return true;
+			}
+			else if (lNameE.equals(encryptedPasswd) ){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, ltmp);
+				return true;
+
+			}
+			else if (wNameE.equals(encryptedPasswd) ){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, wtmp);
+				return true;
+			}
+
+			//duplicateString
+			ftmp = duplicateString(firstName);
+			fNameE = jcrypt.crypt(salt, ftmp);
+			ltmp = duplicateString(lastName);
+			lNameE = jcrypt.crypt(salt, ltmp);
+			wtmp = duplicateString(wholeName);
+			wNameE = jcrypt.crypt(salt, wtmp);
+			if(fNameE.equals(encryptedPasswd)){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, ftmp);
+				return true;
+			}
+			else if (lNameE.equals(encryptedPasswd) ){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, ltmp);
+				return true;
+
+			}
+			else if (wNameE.equals(encryptedPasswd) ){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, wtmp);
+				return true;
+			}
+
+			//reflectString
+			ftmp = reflectString(firstName);
+			fNameE = jcrypt.crypt(salt, ftmp);
+			ltmp = reflectString(lastName);
+			lNameE = jcrypt.crypt(salt, ltmp);
+			wtmp = reflectString(wholeName);
+			wNameE = jcrypt.crypt(salt, wtmp);
+			if(fNameE.equals(encryptedPasswd)){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, ftmp);
+				return true;
+			}
+			else if (lNameE.equals(encryptedPasswd) ){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, ltmp);
+				return true;
+
+			}
+			else if (wNameE.equals(encryptedPasswd) ){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, wtmp);
+				return true;
+			}
+
+			//reflectString2
+			ftmp = reflectString2(firstName);
+			fNameE = jcrypt.crypt(salt, ftmp);
+			ltmp = reflectString2(lastName);
+			lNameE = jcrypt.crypt(salt, ltmp);
+			wtmp = reflectString2(wholeName);
 			wNameE = jcrypt.crypt(salt, wtmp);
 			if(fNameE.equals(encryptedPasswd)){
 				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, ftmp);
@@ -435,18 +624,110 @@ public class PasswordCrack{
 			}
 
 
+			// upCaseString
+			ftmp = upCaseString(firstName);
+			fNameE = jcrypt.crypt(salt, ftmp);
+			ltmp = upCaseString(lastName);
+			lNameE = jcrypt.crypt(salt, ltmp);
+			wtmp = upCaseString(wholeName);
+			wNameE = jcrypt.crypt(salt, wtmp);
+			if(fNameE.equals(encryptedPasswd)){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, ftmp);
+				return true;
+			}
+			else if (lNameE.equals(encryptedPasswd) ){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, ltmp);
+				return true;
 
-		}
+			}
+			else if (wNameE.equals(encryptedPasswd) ){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, wtmp);
+				return true;
+			}
 
-		else if(scanType == 3){
+			// lowCaseString
+			ftmp = lowCaseString(firstName);
+			fNameE = jcrypt.crypt(salt, ftmp);
+			ltmp = lowCaseString(lastName);
+			lNameE = jcrypt.crypt(salt, ltmp);
+			wtmp = lowCaseString(wholeName);
+			wNameE = jcrypt.crypt(salt, wtmp);
+			if(fNameE.equals(encryptedPasswd)){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, ftmp);
+				return true;
+			}
+			else if (lNameE.equals(encryptedPasswd) ){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, ltmp);
+				return true;
 
-			//name jcrypted
-			fNameE = jcrypt.crypt(salt, firstName);
-			lNameE = jcrypt.crypt(salt, lastName);
+			}
+			else if (wNameE.equals(encryptedPasswd) ){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, wtmp);
+				return true;
+			}
 
-			// System.out.printf("jcrypted First name: %s\n", fNameE);
-			// System.out.printf("jcrypted Last name: %s\n", lNameE);
-			// System.out.println();
+			// capitalString
+			ftmp = capitalString(firstName);
+			fNameE = jcrypt.crypt(salt, ftmp);
+			ltmp = capitalString(lastName);
+			lNameE = jcrypt.crypt(salt, ltmp);
+			wtmp = capitalString(wholeName);
+			wNameE = jcrypt.crypt(salt, wtmp);
+			if(fNameE.equals(encryptedPasswd)){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, ftmp);
+				return true;
+			}
+			else if (lNameE.equals(encryptedPasswd) ){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, ltmp);
+				return true;
+
+			}
+			else if (wNameE.equals(encryptedPasswd) ){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, wtmp);
+				return true;
+			}
+
+			// nCapitalString
+			ftmp = nCapitalString(firstName);
+			fNameE = jcrypt.crypt(salt, ftmp);
+			ltmp = nCapitalString(lastName);
+			lNameE = jcrypt.crypt(salt, ltmp);
+			wtmp = nCapitalString(wholeName);
+			wNameE = jcrypt.crypt(salt, wtmp);
+			if(fNameE.equals(encryptedPasswd)){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, ftmp);
+				return true;
+			}
+			else if (lNameE.equals(encryptedPasswd) ){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, ltmp);
+				return true;
+
+			}
+			else if (wNameE.equals(encryptedPasswd) ){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, wtmp);
+				return true;
+			}
+
+			// toggleString
+			ftmp = toggleString(firstName);
+			fNameE = jcrypt.crypt(salt, ftmp);
+			ltmp = toggleString(lastName);
+			lNameE = jcrypt.crypt(salt, ltmp);
+			wtmp = toggleString(wholeName);
+			wNameE = jcrypt.crypt(salt, wtmp);
+			if(fNameE.equals(encryptedPasswd)){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, ftmp);
+				return true;
+			}
+			else if (lNameE.equals(encryptedPasswd) ){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, ltmp);
+				return true;
+
+			}
+			else if (wNameE.equals(encryptedPasswd) ){
+				System.out.printf("Password for %s %s is: %s\n", firstName, lastName, wtmp);
+				return true;
+			}
 		}
 
 
@@ -603,8 +884,55 @@ public class PasswordCrack{
 							return true;
 						}
 
-						//toggleString2
-						temp = toggleString2(dictionary_word);
+						break;
+
+				//two mangles
+				case 3:	//prepend
+						for(int i = 0; i < characters.length(); i++){
+
+							temp = prepend(dictionary_word, characters.charAt(i));
+							encryptedWord = jcrypt.crypt(salt, temp);
+							//compare w/ actual encrypted password
+							if(encryptedWord.equals(encryptedPasswd)){
+								System.out.printf("Password for %s %s is: %s\n", firstName, lastName, temp);
+								return true;
+							}
+						}
+
+
+						//append
+						for(int i = 0; i < characters.length(); i++){
+							temp = deleteFirstChar(dictionary_word);
+							temp = append(temp, characters.charAt(i));
+							encryptedWord = jcrypt.crypt(salt, temp);
+							//compare w/ actual encrypted password
+							if(encryptedWord.equals(encryptedPasswd)){
+								System.out.printf("Password for %s %s is: %s\n", firstName, lastName, temp);
+								return true;
+							}
+						}
+
+
+						//delete first char
+						temp = deleteFirstChar(dictionary_word);
+						encryptedWord = jcrypt.crypt(salt, temp);
+						//compare w/ actual encrypted password
+						if(encryptedWord.equals(encryptedPasswd)){
+							System.out.printf("Password for %s %s is: %s\n", firstName, lastName, temp);
+							return true;
+						}
+
+						//delete last char
+						temp = deleteLastChar(dictionary_word);
+						encryptedWord = jcrypt.crypt(salt, temp);
+						//compare w/ actual encrypted password
+						if(encryptedWord.equals(encryptedPasswd)){
+							System.out.printf("Password for %s %s is: %s\n", firstName, lastName, temp);
+							return true;
+						}
+
+						//revString
+						temp = revString(dictionary_word);
 						encryptedWord = jcrypt.crypt(salt, temp);
 						//compare w/ actual encrypted password
 						if(encryptedWord.equals(encryptedPasswd)){
@@ -613,12 +941,79 @@ public class PasswordCrack{
 						}
 
 
+						//duplicateString
+						temp = duplicateString(dictionary_word);
+						encryptedWord = jcrypt.crypt(salt, temp);
+						//compare w/ actual encrypted password
+						if(encryptedWord.equals(encryptedPasswd)){
+							System.out.printf("Password for %s %s is: %s\n", firstName, lastName, temp);
+							return true;
+						}
 
 
-						break;
+						//reflectString
+						temp = reflectString(dictionary_word);
+						encryptedWord = jcrypt.crypt(salt, temp);
+						//compare w/ actual encrypted password
+						if(encryptedWord.equals(encryptedPasswd)){
+							System.out.printf("Password for %s %s is: %s\n", firstName, lastName, temp);
+							return true;
+						}
 
-				//two mangles
-				case 3:
+						//reflectString2
+						temp = reflectString2(dictionary_word);
+						encryptedWord = jcrypt.crypt(salt, temp);
+						//compare w/ actual encrypted password
+						if(encryptedWord.equals(encryptedPasswd)){
+							System.out.printf("Password for %s %s is: %s\n", firstName, lastName, temp);
+							return true;
+						}
+
+						//upCaseString
+						temp = upCaseString(dictionary_word);
+						encryptedWord = jcrypt.crypt(salt, temp);
+						//compare w/ actual encrypted password
+						if(encryptedWord.equals(encryptedPasswd)){
+							System.out.printf("Password for %s %s is: %s\n", firstName, lastName, temp);
+							return true;
+						}
+
+						//lowCaseString
+						temp = lowCaseString(dictionary_word);
+						encryptedWord = jcrypt.crypt(salt, temp);
+						//compare w/ actual encrypted password
+						if(encryptedWord.equals(encryptedPasswd)){
+							System.out.printf("Password for %s %s is: %s\n", firstName, lastName, temp);
+							return true;
+						}
+
+
+						//capitalString
+						temp = capitalString(dictionary_word);
+						encryptedWord = jcrypt.crypt(salt, temp);
+						//compare w/ actual encrypted password
+						if(encryptedWord.equals(encryptedPasswd)){
+							System.out.printf("Password for %s %s is: %s\n", firstName, lastName, temp);
+							return true;
+						}
+
+						//ncapitalString
+						temp = nCapitalString(dictionary_word);
+						encryptedWord = jcrypt.crypt(salt, temp);
+						//compare w/ actual encrypted password
+						if(encryptedWord.equals(encryptedPasswd)){
+							System.out.printf("Password for %s %s is: %s\n", firstName, lastName, temp);
+							return true;
+						}
+
+						//toggleString
+						temp = toggleString(dictionary_word);
+						encryptedWord = jcrypt.crypt(salt, temp);
+						//compare w/ actual encrypted password
+						if(encryptedWord.equals(encryptedPasswd)){
+							System.out.printf("Password for %s %s is: %s\n", firstName, lastName, temp);
+							return true;
+						}
 						break;
 
 				default:	break;
@@ -714,14 +1109,21 @@ public class PasswordCrack{
 
 	}
 
-	public static String toggleString(String w){
-		return w;
-	}
 
-	public static String toggleString2(String w){
-		return w;
-
-	}
+	public static String toggleString(String inputString) {
+	       String result = "";
+	       for (int i = 0; i < inputString.length(); i++) {
+	           char currentChar = inputString.charAt(i);
+	           if (Character.isUpperCase(currentChar)) {
+	               char currentCharToLowerCase = Character.toLowerCase(currentChar);
+	               result = result + currentCharToLowerCase;
+	           } else {
+	               char currentCharToUpperCase = Character.toUpperCase(currentChar);
+	               result = result + currentCharToUpperCase;
+	           }
+	       }
+	       return result;
+	   }
 
 
 
