@@ -13,7 +13,6 @@ public class PasswordCrack{
 		}
 
 
-
 		//passwords to crack
 		File passwd = null;
 		if (0 < args.length) {
@@ -47,7 +46,6 @@ public class PasswordCrack{
 
 			System.out.printf("First name: %s\n", firstName);
 			System.out.printf("Last name: %s\n", lastName);
-			System.out.println();
 
 			//if true and pw found, skip next two steps
 			boolean foundPasswd;
@@ -67,6 +65,8 @@ public class PasswordCrack{
 			if(!foundPasswd){
 				System.out.printf("Password not found for %s %s\n", firstName, lastName);
 			}
+
+			System.out.println();
 
 
 			//4. Redo step 3, but using mangled 
@@ -122,7 +122,6 @@ public class PasswordCrack{
 				return true;
 			}
 
-			System.out.println();
 		}
 
 		else if(scanType == 2){
@@ -293,6 +292,8 @@ public class PasswordCrack{
 						break;
 
 				default:	break;
+
+				
 
 
 			}//end switch statement
