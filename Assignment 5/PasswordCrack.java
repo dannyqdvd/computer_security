@@ -25,7 +25,8 @@ public class PasswordCrack{
 		//Reading password file
 		FileReader fr = new FileReader(passwd);
 		BufferedReader br = new BufferedReader(fr);
-		System.out.println("Reading password file: " + passwd);
+		//System.out.println("Reading password file: " + passwd);
+		System.out.println("List of cracked");
 		System.out.println();
 		Scanner scanner = new Scanner (passwd);
 
@@ -38,8 +39,8 @@ public class PasswordCrack{
 			String encryptedPasswd = tokens[1];
 			String salt = "" + encryptedPasswd.charAt(0) + encryptedPasswd.charAt(1);
 
-			System.out.printf("Encrypted password: %s\n", encryptedPasswd);
-			System.out.printf("salt: %s\n", salt);
+			//System.out.printf("Encrypted password: %s\n", encryptedPasswd);
+			//System.out.printf("salt: %s\n", salt);
 
 			//2. Seed the word list with words that the user might have 
 			//utilized in constructing his or her password (e.g., his first and last name);
@@ -47,8 +48,8 @@ public class PasswordCrack{
 			String firstName = fullName[0];
 			String lastName = fullName[1];
 
-			System.out.printf("First name: %s\n", firstName);
-			System.out.printf("Last name: %s\n", lastName);
+			//System.out.printf("First name: %s\n", firstName);
+			//System.out.printf("Last name: %s\n", lastName);
 
 			//if true and pw found, skip next two steps
 			boolean foundPasswd;
